@@ -56,6 +56,27 @@ export interface TokenHeatmapResponse {
   timestamp: string;
 }
 
+export interface TrendingTweet {
+  id: string;
+  username: string;
+  handle: string;
+  avatar?: string;
+  content: string;
+  hashtags?: string[];
+  keywords?: string[];
+  likes: number;
+  comments: number;
+  reposts: number;
+  timestamp: string;
+  engagement_score?: number;
+}
+
+export interface TrendingTweetsResponse {
+  tweets: TrendingTweet[];
+  total_count: number;
+  timestamp: string;
+}
+
 // API Service Class
 class ApiService {
   private baseUrl = 'https://agentflow-api-1049105662092.europe-west1.run.app/api';
@@ -103,6 +124,22 @@ class ApiService {
   async getTokenHeatmap(limit: number = 20): Promise<TokenHeatmapResponse> {
     console.log(`🔥 Fetching token heatmap with limit ${limit}`);
     return this.fetchApi<TokenHeatmapResponse>(`/tokens/heatmap?limit=${limit}`);
+  }
+
+  async getTrendingTweets(
+    limit: number = 50,
+    hoursBack: number = 24,
+    minEngagement: number = 10,
+    topTokensLimit: number = 20
+  ): Promise<TrendingTweetsResponse> {
+    console.log(`🐦 Fetching trending tweets with limit ${limit}`);
+    const params = new URLSearchParams({
+      limit: limit.toString(),
+      hours_back: hoursBack.toString(),
+      min_engagement: minEngagement.toString(),
+      top_tokens_limit: topTokensLimit.toString()
+    });
+    return this.fetchApi<TrendingTweetsResponse>(`/trending-tweets?${params}`);
   }
 }
 

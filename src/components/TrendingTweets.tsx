@@ -1,5 +1,6 @@
 
-import { Heart, MessageCircle, Repeat2 } from 'lucide-react';
+import { Heart, MessageCircle, Repeat2, Loader2 } from 'lucide-react';
+import { useTrendingTweets } from '../hooks/useMarketData';
 
 interface Tweet {
   id: string;
@@ -16,7 +17,10 @@ interface Tweet {
 }
 
 const TrendingTweets = () => {
-  const tweets: Tweet[] = [
+  const { data: trendingTweetsData, isLoading, error } = useTrendingTweets(50, 24, 10, 20);
+
+  // Fallback data if API fails
+  const fallbackTweets: Tweet[] = [
     {
       id: '1',
       username: 'Crypto Beginner',
@@ -45,6 +49,14 @@ const TrendingTweets = () => {
     }
   ];
 
+  // Use API data or fallback
+  const tweets = trendingTweetsData?.tweets?.map(tweet => ({
+    ...tweet,
+    avatar: tweet.avatar || '🔥',
+    hashtags: tweet.hashtags || [],
+    keywords: tweet.keywords || []
+  })) || fallbackTweets;
+
   const formatNumber = (num: number) => {
     if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}k`;
@@ -55,8 +67,21 @@ const TrendingTweets = () => {
   // Show only 2 tweets to prevent overflow
   const displayedTweets = tweets.slice(0, 2);
 
+  if (isLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="h-full flex flex-col overflow-hidden">
+      {error && (
+        <div className="mb-2 text-xs text-amber-400 bg-amber-900/20 border border-amber-700/50 rounded px-2 py-1">
+          Using fallback data
+        </div>
+      )}
       {/* Tweets Container - Full Height */}
       <div className="flex-1 overflow-hidden">
         <div className="h-full overflow-y-auto pr-2" style={{
