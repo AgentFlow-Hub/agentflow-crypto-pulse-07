@@ -17,7 +17,15 @@ interface Tweet {
 }
 
 const TrendingTweets = () => {
+  console.log('🐦 TrendingTweets component mounting...');
+  
   const { data: trendingTweetsData, isLoading, error } = useTrendingTweets(50, 24, 10, 20);
+  
+  console.log('🐦 TrendingTweets hook state:', { 
+    data: trendingTweetsData, 
+    isLoading, 
+    error: error?.message || error 
+  });
 
   // Fallback data if API fails
   const fallbackTweets: Tweet[] = [
