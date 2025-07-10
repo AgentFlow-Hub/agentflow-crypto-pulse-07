@@ -19,6 +19,16 @@ interface KOL {
 const Top20KOLs = () => {
   const { data: kolRankingsData, isLoading, error } = useKOLRankings(20);
   
+  // Debug logging
+  console.log('🔍 KOL Rankings Debug:', {
+    isLoading,
+    error,
+    data: kolRankingsData,
+    hasData: !!kolRankingsData,
+    dataKeys: kolRankingsData ? Object.keys(kolRankingsData) : [],
+    kols: kolRankingsData?.kols || 'No kols property'
+  });
+  
   const formatFollowers = (count: number) => {
     if (count >= 1000000) {
       return `${(count / 1000000).toFixed(1)}M`;
@@ -28,7 +38,7 @@ const Top20KOLs = () => {
     return count.toString();
   };
 
-  // Use API data or fallback
+  // Use API data with correct property names
   const kols: KOL[] = kolRankingsData?.kols?.length > 0 
     ? kolRankingsData.kols.map((kol) => ({
         rank: kol.rank,
@@ -69,6 +79,39 @@ const Top20KOLs = () => {
 
   if (error) {
     console.error('👑 KOL rankings API error:', error);
+    return (
+      <div className="bg-gradient-to-br from-slate-800/50 to-indigo-900/30 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 shadow-2xl shadow-indigo-500/10">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            Top 20 KOLs
+          </h2>
+        </div>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-red-400 text-lg text-center">
+            <p>Failed to load KOL rankings</p>
+            <p className="text-sm text-gray-400 mt-2">Check console for details</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (kols.length === 0) {
+    return (
+      <div className="bg-gradient-to-br from-slate-800/50 to-indigo-900/30 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 shadow-2xl shadow-indigo-500/10">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            Top 20 KOLs
+          </h2>
+        </div>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-gray-400 text-lg text-center">
+            <p>No KOL rankings available</p>
+            <p className="text-sm text-gray-500 mt-2">Data might be loading or unavailable</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
