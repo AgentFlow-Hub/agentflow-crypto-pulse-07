@@ -26,7 +26,7 @@ const Top20KOLs = () => {
     data: kolRankingsData,
     hasData: !!kolRankingsData,
     dataKeys: kolRankingsData ? Object.keys(kolRankingsData) : [],
-    kols: kolRankingsData?.kols || 'No kols property'
+    kolRankings: kolRankingsData?.kol_rankings || 'No kol_rankings property'
   });
   
   const formatFollowers = (count: number) => {
@@ -39,8 +39,8 @@ const Top20KOLs = () => {
   };
 
   // Use API data with correct property names
-  const kols: KOL[] = kolRankingsData?.kols?.length > 0 
-    ? kolRankingsData.kols.map((kol) => ({
+  const kols: KOL[] = kolRankingsData?.kol_rankings?.length > 0 
+    ? kolRankingsData.kol_rankings.map((kol) => ({
         rank: kol.rank,
         username: kol.username,
         name: kol.name,

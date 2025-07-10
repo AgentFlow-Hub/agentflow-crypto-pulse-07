@@ -117,7 +117,7 @@ export interface KOLRanking {
 }
 
 export interface KOLRankingsResponse {
-  kols: KOLRanking[];
+  kol_rankings: KOLRanking[];
   metadata: {
     total_count: number;
     limit: number;
