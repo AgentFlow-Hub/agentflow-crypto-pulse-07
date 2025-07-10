@@ -17,7 +17,7 @@ interface KOL {
 }
 
 const Top20KOLs = () => {
-  const { data: kolRankingsData, isLoading, error } = useKOLRankings(20);
+  const { data: kolRankingsData, isLoading, error } = useKOLRankings(20, true);
   
   // Enhanced debug logging
   console.log('🔍 KOL Rankings Enhanced Debug:', {
