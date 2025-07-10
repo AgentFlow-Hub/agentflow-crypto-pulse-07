@@ -19,28 +19,42 @@ interface KOL {
 const Top20KOLs = () => {
   const { data: kolRankingsData, isLoading, error } = useKOLRankings(20);
   
-  // Debug logging
-  console.log('🔍 KOL Rankings Debug:', {
+  // Enhanced debug logging
+  console.log('🔍 KOL Rankings Enhanced Debug:', {
     isLoading,
     error,
     data: kolRankingsData,
     hasData: !!kolRankingsData,
     dataKeys: kolRankingsData ? Object.keys(kolRankingsData) : [],
-    kolRankings: kolRankingsData?.kol_rankings || 'No kol_rankings property'
+    kolRankings: kolRankingsData?.kol_rankings,
+    kolRankingsLength: kolRankingsData?.kol_rankings?.length,
+    firstKOL: kolRankingsData?.kol_rankings?.[0],
+    sampleKOLFields: kolRankingsData?.kol_rankings?.[0] ? Object.keys(kolRankingsData.kol_rankings[0]) : []
   });
   
   const formatFollowers = (count: number | null | undefined) => {
-    const safeCount = count || 0;
-    if (safeCount >= 1000000) {
-      return `${(safeCount / 1000000).toFixed(1)}M`;
-    } else if (safeCount >= 1000) {
-      return `${(safeCount / 1000).toFixed(0)}K`;
+    if (count === null || count === undefined) {
+      return "N/A";
     }
-    return safeCount.toString();
+    if (count === 0) {
+      return "0";
+    }
+    if (count >= 1000000) {
+      return `${(count / 1000000).toFixed(1)}M`;
+    } else if (count >= 1000) {
+      return `${(count / 1000).toFixed(0)}K`;
+    }
+    return count.toString();
   };
 
-  const safeToFixed = (value: number | null | undefined, decimals: number = 1) => {
-    return (value || 0).toFixed(decimals);
+  const safeDisplayValue = (value: number | null | undefined, decimals: number = 1, suffix: string = "") => {
+    if (value === null || value === undefined) {
+      return "N/A";
+    }
+    if (value === 0) {
+      return `0${suffix}`;
+    }
+    return `${value.toFixed(decimals)}${suffix}`;
   };
 
   // Use API data with correct property names and safe defaults
@@ -169,7 +183,7 @@ const Top20KOLs = () => {
                 <span className="text-xs text-gray-400">Authority</span>
               </div>
               <div className="text-2xl font-bold text-yellow-400">
-                {safeToFixed(kol.authorityScore, 1)}
+                {safeDisplayValue(kol.authorityScore, 1)}
               </div>
             </div>
             
@@ -191,21 +205,21 @@ const Top20KOLs = () => {
                   <span className="text-gray-400">Engagement</span>
                 </div>
                 <div className="text-green-400 font-semibold">
-                  {safeToFixed((kol.engagementRate || 0) * 100, 1)}%
+                  {safeDisplayValue((kol.engagementRate || 0) * 100, 1, "%")}
                 </div>
               </div>
               
               <div className="text-center">
                 <span className="text-gray-400">Quality</span>
                 <div className="text-blue-400 font-semibold">
-                  {safeToFixed(kol.followerQuality, 1)}
+                  {safeDisplayValue(kol.followerQuality, 1)}
                 </div>
               </div>
               
               <div className="text-center">
                 <span className="text-gray-400">Expertise</span>
                 <div className="text-purple-400 font-semibold">
-                  {safeToFixed(kol.cryptoExpertise, 1)}
+                  {safeDisplayValue(kol.cryptoExpertise, 1)}
                 </div>
               </div>
             </div>
