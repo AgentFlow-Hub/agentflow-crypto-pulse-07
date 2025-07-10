@@ -57,23 +57,67 @@ const TrendingTweets = () => {
     }
   ];
 
-  // Use API data or fallback (use fallback if API returns empty array)
-  const apiTweets = trendingTweetsData?.trending_tweets || [];
-  const tweets = apiTweets.length > 0 
-    ? apiTweets.map(tweet => ({
-        ...tweet,
-        avatar: tweet.avatar || '🔥',
-        hashtags: tweet.hashtags || [],
-        keywords: tweet.keywords || []
-      }))
-    : fallbackTweets;
-
-  const formatNumber = (num: number) => {
+  const formatNumber = (num: number | undefined | null) => {
+    if (!num || typeof num !== 'number' || isNaN(num)) {
+      return '0';
+    }
     if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}k`;
     }
     return num.toString();
   };
+
+  // Safe data mapping with error handling
+  const mapApiTweet = (tweet: any): Tweet => {
+    try {
+      return {
+        id: tweet.id || `fallback-${Date.now()}`,
+        username: tweet.username || tweet.user_display_name || 'Anonymous',
+        handle: tweet.handle || '@unknown',
+        avatar: tweet.avatar || tweet.user_profile_image_url || '🔥',
+        content: tweet.content || tweet.text || 'No content available',
+        hashtags: Array.isArray(tweet.hashtags) ? tweet.hashtags : [],
+        keywords: Array.isArray(tweet.keywords) ? tweet.keywords : [],
+        likes: Number(tweet.likes || tweet.favorite_count || 0) || 0,
+        comments: Number(tweet.comments || tweet.reply_count || 0) || 0,
+        reposts: Number(tweet.reposts || tweet.retweet_count || 0) || 0,
+        timestamp: tweet.timestamp || tweet.created_at || 'Unknown time'
+      };
+    } catch (err) {
+      console.error('Error mapping tweet:', err, tweet);
+      return {
+        id: `error-${Date.now()}`,
+        username: 'Error User',
+        handle: '@error',
+        avatar: '⚠️',
+        content: 'Failed to load tweet content',
+        hashtags: [],
+        keywords: [],
+        likes: 0,
+        comments: 0,
+        reposts: 0,
+        timestamp: 'Error'
+      };
+    }
+  };
+
+  // Use API data or fallback with safe mapping
+  let tweets: Tweet[] = [];
+  try {
+    const apiTweets = trendingTweetsData?.trending_tweets || [];
+    console.log('🐦 Raw API tweets:', apiTweets);
+    
+    if (apiTweets.length > 0) {
+      tweets = apiTweets.map(mapApiTweet);
+      console.log('🐦 Mapped tweets:', tweets);
+    } else {
+      tweets = fallbackTweets;
+      console.log('🐦 Using fallback tweets');
+    }
+  } catch (err) {
+    console.error('🐦 Error processing tweets:', err);
+    tweets = fallbackTweets;
+  }
 
   // Show only 2 tweets to prevent overflow
   const displayedTweets = tweets.slice(0, 2);
