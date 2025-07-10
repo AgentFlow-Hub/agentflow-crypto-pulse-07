@@ -104,15 +104,16 @@ export interface HotTrendsResponse {
 }
 
 export interface KOLRanking {
-  id: string;
+  rank: number;
   username: string;
-  display_name?: string;
-  profile_image_url?: string;
+  name: string;
+  authority_score: number;
   followers_count: number;
   engagement_rate: number;
-  influence_score: number;
-  rank: number;
-  trend_data?: number[];
+  follower_quality: number;
+  crypto_expertise: number;
+  is_verified: boolean;
+  profile_picture: string;
 }
 
 export interface KOLRankingsResponse {
