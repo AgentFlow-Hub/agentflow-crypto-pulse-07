@@ -1,5 +1,6 @@
 
 import { useState } from 'react';
+import { useKOLRankings } from '../hooks/useMarketData';
 
 interface KOL {
   id: string;
@@ -12,8 +13,10 @@ interface KOL {
 
 const Top20KOLs = () => {
   const [timeFilter, setTimeFilter] = useState('30D');
+  const [useChartFormat, setUseChartFormat] = useState(false);
   
   const timeFilters = ['7D', '30D', '3M', '6M', '12M'];
+  const { data: kolRankingsData, isLoading, error } = useKOLRankings(20, useChartFormat);
   
   const generateTrendData = () => {
     return Array.from({ length: 20 }, () => Math.random() * 40 + 10);
@@ -43,7 +46,7 @@ const Top20KOLs = () => {
     'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&h=150&fit=crop&crop=face'
   ];
 
-  const kols: KOL[] = Array.from({ length: 20 }, (_, index) => ({
+  const fallbackKOLs: KOL[] = Array.from({ length: 20 }, (_, index) => ({
     id: `kol-${index + 1}`,
     username: [
       'CryptoKing.eth', 'BlockchainGuru', 'DefiMaster', 'NFTCollector',
@@ -57,6 +60,23 @@ const Top20KOLs = () => {
     rank: index + 1,
     trendData: generateTrendData()
   }));
+
+  // Use API data or fallback
+  let kols: KOL[] = [];
+  if (kolRankingsData?.kols && kolRankingsData.kols.length > 0) {
+    console.log('👑 Using API KOL rankings:', kolRankingsData.kols);
+    kols = kolRankingsData.kols.map((kol, index) => ({
+      id: kol.id || `kol-api-${index}`,
+      username: kol.username || kol.display_name || `KOL${index + 1}`,
+      profileImage: kol.profile_image_url || avatarImages[index] || avatarImages[0],
+      popularity: `${(kol.engagement_rate || Math.random() * 2 + 0.1).toFixed(2)}%`,
+      rank: kol.rank || index + 1,
+      trendData: kol.trend_data || generateTrendData()
+    }));
+  } else {
+    console.log('👑 Using fallback KOLs');
+    kols = fallbackKOLs;
+  }
 
   const getRankStyle = (rank: number) => {
     if (rank === 1) return 'border-yellow-400 bg-gradient-to-br from-yellow-500/20 to-amber-600/20';
@@ -82,14 +102,33 @@ const Top20KOLs = () => {
     }).join(' ');
   };
 
+  if (isLoading) {
+    return (
+      <div className="bg-gradient-to-br from-slate-800/50 to-indigo-900/30 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 shadow-2xl shadow-indigo-500/10">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+            Top 20 KOLs
+          </h2>
+        </div>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-gray-400 text-lg">Loading KOL rankings...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error('👑 KOL rankings API error:', error);
+  }
+
   return (
     <div className="bg-gradient-to-br from-slate-800/50 to-indigo-900/30 backdrop-blur-sm border border-indigo-500/20 rounded-2xl p-6 shadow-2xl shadow-indigo-500/10">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 gap-4">
         <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          Top 20
+          Top 20 KOLs
         </h2>
         
-        {/* Time Filter Only */}
+        {/* Time Filter and Chart Format Toggle */}
         <div className="flex space-x-1">
           {timeFilters.map((filter) => (
             <button
@@ -104,6 +143,17 @@ const Top20KOLs = () => {
               {filter}
             </button>
           ))}
+          <button
+            onClick={() => setUseChartFormat(!useChartFormat)}
+            className={`px-3 py-1.5 rounded text-sm font-medium transition-all ${
+              useChartFormat
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+            title="Toggle chart data format"
+          >
+            📊
+          </button>
         </div>
       </div>
 

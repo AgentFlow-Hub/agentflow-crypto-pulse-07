@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useHotTrends } from '../hooks/useMarketData';
 
 interface TrendWord {
   word: string;
@@ -18,6 +19,7 @@ interface TrendWord {
 const HotTrendsExplorer = () => {
   const [trendWords, setTrendWords] = useState<TrendWord[]>([]);
   const navigate = useNavigate();
+  const { data: hotTrendsData, isLoading, error } = useHotTrends(24, 30);
 
   const handleTrendClick = (trendWord: string) => {
     window.scrollTo(0, 0);
@@ -130,10 +132,30 @@ const HotTrendsExplorer = () => {
       const containerHeight = 500;
       const positions: Array<{x: number, y: number, width: number, height: number}> = [];
 
-      const shuffledKeywords = [...keywords].sort(() => Math.random() - 0.5).slice(0, 30);
+      // Use API data or fallback to static keywords
+      let trendsToUse = keywords;
+      if (hotTrendsData?.trends && hotTrendsData.trends.length > 0) {
+        console.log('🔥 Using API trends data:', hotTrendsData.trends);
+        trendsToUse = hotTrendsData.trends.map(trend => ({
+          word: trend.trend,
+          category: mapApiCategoryToLocal(trend.category) || 'tech'
+        }));
+      } else {
+        console.log('🔥 Using fallback keywords');
+      }
+
+      const shuffledKeywords = [...trendsToUse].sort(() => Math.random() - 0.5).slice(0, 30);
 
       shuffledKeywords.forEach((keywordObj, index) => {
-        const strength = Math.random() * 80 + 40;
+        // Use API strength if available, otherwise random
+        let strength = Math.random() * 80 + 40;
+        if (hotTrendsData?.trends) {
+          const apiTrend = hotTrendsData.trends.find(t => t.trend === keywordObj.word);
+          if (apiTrend) {
+            // Normalize strength from API (assuming it could be 0-100 or mentions count)
+            strength = Math.min(100, Math.max(40, apiTrend.strength > 100 ? apiTrend.strength / 10 : apiTrend.strength));
+          }
+        }
         const fontSize = Math.max(10, Math.min(24, strength / 3.5));
         
         const baseSize = Math.max(fontSize * 4, keywordObj.word.length * fontSize * 0.9);
@@ -189,7 +211,25 @@ const HotTrendsExplorer = () => {
     };
 
     generateWordCloud();
-  }, []);
+  }, [hotTrendsData]);
+
+  // Helper function to map API categories to local categories
+  const mapApiCategoryToLocal = (apiCategory: string): 'finance' | 'tech' | 'meme' | 'media' => {
+    const lower = apiCategory.toLowerCase();
+    if (lower.includes('finance') || lower.includes('crypto') || lower.includes('defi') || lower.includes('token')) {
+      return 'finance';
+    }
+    if (lower.includes('tech') || lower.includes('ai') || lower.includes('blockchain') || lower.includes('web3')) {
+      return 'tech';
+    }
+    if (lower.includes('meme') || lower.includes('social') || lower.includes('viral')) {
+      return 'meme';
+    }
+    if (lower.includes('media') || lower.includes('news') || lower.includes('content')) {
+      return 'media';
+    }
+    return 'tech'; // default
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -238,6 +278,23 @@ const HotTrendsExplorer = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 rounded-2xl min-h-[500px] overflow-hidden relative border border-gray-700/50 shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900/10 via-transparent to-blue-900/10"></div>
+          <div className="flex items-center justify-center h-full">
+            <div className="text-gray-400 text-lg">Loading hot trends...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error('🔥 Hot trends API error:', error);
+  }
 
   return (
     <div className="space-y-6">

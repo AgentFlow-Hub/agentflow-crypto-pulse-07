@@ -1,6 +1,14 @@
 
 import { useQuery } from '@tanstack/react-query';
-import { apiService, MarketOverviewResponse, TokenHeatmapResponse, TrendingTweetsResponse } from '../services/api';
+import { 
+  apiService, 
+  MarketOverviewResponse, 
+  TokenHeatmapResponse, 
+  TrendingTweetsResponse,
+  HotTrendsResponse,
+  KOLRankingsResponse,
+  TokenSocialRankingsResponse
+} from '../services/api';
 
 export const useMarketOverview = (periodHours: number = 24) => {
   return useQuery({
@@ -31,6 +39,38 @@ export const useTrendingTweets = (
   return useQuery({
     queryKey: ['trendingTweets', limit, hoursBack, minEngagement, topTokensLimit],
     queryFn: () => apiService.getTrendingTweets(limit, hoursBack, minEngagement, topTokensLimit),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    retry: 3,
+  });
+};
+
+export const useHotTrends = (hoursBack: number = 24, limit: number = 30) => {
+  return useQuery({
+    queryKey: ['hotTrends', hoursBack, limit],
+    queryFn: () => apiService.getHotTrends(hoursBack, limit),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    retry: 3,
+  });
+};
+
+export const useKOLRankings = (limit: number = 20, chartFormat: boolean = false) => {
+  return useQuery({
+    queryKey: ['kolRankings', limit, chartFormat],
+    queryFn: () => chartFormat 
+      ? apiService.getKOLRankingsChart(limit) 
+      : apiService.getKOLRankings(limit),
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    retry: 3,
+  });
+};
+
+export const useTokenSocialRankings = (limit: number = 20, timeframe: string = '24h') => {
+  return useQuery({
+    queryKey: ['tokenSocialRankings', limit, timeframe],
+    queryFn: () => apiService.getTokenSocialRankings(limit, timeframe),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     retry: 3,

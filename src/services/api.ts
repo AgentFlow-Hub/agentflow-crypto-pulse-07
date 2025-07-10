@@ -85,6 +85,66 @@ export interface TrendingTweetsResponse {
   };
 }
 
+export interface HotTrend {
+  trend: string;
+  strength: number;
+  category: string;
+  mentions_count: number;
+  growth_rate?: number;
+}
+
+export interface HotTrendsResponse {
+  trends: HotTrend[];
+  metadata: {
+    total_count: number;
+    hours_back: number;
+    limit: number;
+    generated_at: string;
+  };
+}
+
+export interface KOLRanking {
+  id: string;
+  username: string;
+  display_name?: string;
+  profile_image_url?: string;
+  followers_count: number;
+  engagement_rate: number;
+  influence_score: number;
+  rank: number;
+  trend_data?: number[];
+}
+
+export interface KOLRankingsResponse {
+  kols: KOLRanking[];
+  metadata: {
+    total_count: number;
+    limit: number;
+    generated_at: string;
+  };
+}
+
+export interface TokenSocialRanking {
+  token_symbol: string;
+  token_name: string;
+  social_score: number;
+  mentions_count: number;
+  sentiment_score: number;
+  rank: number;
+  price_change_24h?: number;
+  market_cap?: number;
+}
+
+export interface TokenSocialRankingsResponse {
+  tokens: TokenSocialRanking[];
+  metadata: {
+    total_count: number;
+    timeframe: string;
+    limit: number;
+    generated_at: string;
+  };
+}
+
 // API Service Class
 class ApiService {
   private baseUrl = 'https://agentflow-api-1049105662092.europe-west1.run.app/api';
@@ -148,6 +208,34 @@ class ApiService {
       top_tokens_limit: topTokensLimit.toString()
     });
     return this.fetchApi<TrendingTweetsResponse>(`/trending-tweets?${params}`);
+  }
+
+  async getHotTrends(hoursBack: number = 24, limit: number = 30): Promise<HotTrendsResponse> {
+    console.log(`🔥 Fetching hot trends for ${hoursBack} hours, limit ${limit}`);
+    const params = new URLSearchParams({
+      hours_back: hoursBack.toString(),
+      limit: limit.toString()
+    });
+    return this.fetchApi<HotTrendsResponse>(`/hot-trends?${params}`);
+  }
+
+  async getKOLRankings(limit: number = 20): Promise<KOLRankingsResponse> {
+    console.log(`👑 Fetching KOL rankings with limit ${limit}`);
+    return this.fetchApi<KOLRankingsResponse>(`/kol-rankings?limit=${limit}`);
+  }
+
+  async getKOLRankingsChart(limit: number = 20): Promise<KOLRankingsResponse> {
+    console.log(`📊 Fetching KOL rankings chart with limit ${limit}`);
+    return this.fetchApi<KOLRankingsResponse>(`/kol-rankings/chart?limit=${limit}`);
+  }
+
+  async getTokenSocialRankings(limit: number = 20, timeframe: string = '24h'): Promise<TokenSocialRankingsResponse> {
+    console.log(`🎯 Fetching token social rankings for ${timeframe}, limit ${limit}`);
+    const params = new URLSearchParams({
+      limit: limit.toString()
+    });
+    // Note: timeframe might be handled differently by the API, but we'll include it in logs for now
+    return this.fetchApi<TokenSocialRankingsResponse>(`/tokens/social-rankings?${params}`);
   }
 }
 

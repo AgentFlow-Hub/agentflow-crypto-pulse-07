@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { Flame } from 'lucide-react';
+import { useTokenSocialRankings } from '../hooks/useMarketData';
 
 interface HotTokenData {
   symbol: string;
@@ -10,11 +11,21 @@ interface HotTokenData {
 }
 
 const HotTokens = () => {
-  const [activeTimeframe, setActiveTimeframe] = useState('1H');
+  const [activeTimeframe, setActiveTimeframe] = useState('1D');
   
-  const timeframes = ['1H', '4H', '1D', '1W'];
+  const timeframes = ['4H', '1D', '1W', '30D'];
   
-  const hotTokens: HotTokenData[] = [
+  // Map timeframes to API-compatible format
+  const timeframeMap = {
+    '4H': '4h',
+    '1D': '24h', 
+    '1W': '7d',
+    '30D': '30d'
+  };
+  
+  const { data: tokenRankingsData, isLoading, error } = useTokenSocialRankings(20, timeframeMap[activeTimeframe as keyof typeof timeframeMap]);
+  
+  const fallbackTokens: HotTokenData[] = [
     { symbol: 'BTC', name: 'Bitcoin', trendScore: 6817, icon: '₿' },
     { symbol: 'ETH', name: 'Ethereum', trendScore: 5420, icon: 'Ξ' },
     { symbol: 'SOL', name: 'Solana', trendScore: 4250, icon: '◎' },
@@ -29,6 +40,39 @@ const HotTokens = () => {
     { symbol: 'XTZ', name: 'Tezos', trendScore: 2120, icon: '🅧' }
   ];
 
+  // Generate token icon based on symbol
+  const getTokenIcon = (symbol: string): string => {
+    const iconMap: { [key: string]: string } = {
+      'BTC': '₿',
+      'ETH': 'Ξ',
+      'SOL': '◎',
+      'ADA': '₳',
+      'AVAX': '🔺',
+      'DOT': '●',
+      'MATIC': '🔷',
+      'LINK': '🔗',
+      'UNI': '🦄',
+      'ATOM': '⚛',
+      'ALGO': '▲'
+    };
+    return iconMap[symbol] || '🔸';
+  };
+
+  // Use API data or fallback
+  let hotTokens: HotTokenData[] = [];
+  if (tokenRankingsData?.tokens && tokenRankingsData.tokens.length > 0) {
+    console.log('🎯 Using API token rankings:', tokenRankingsData.tokens);
+    hotTokens = tokenRankingsData.tokens.map(token => ({
+      symbol: token.token_symbol,
+      name: token.token_name || token.token_symbol,
+      trendScore: Math.round(token.social_score || token.mentions_count || 0),
+      icon: getTokenIcon(token.token_symbol)
+    }));
+  } else {
+    console.log('🎯 Using fallback tokens');
+    hotTokens = fallbackTokens;
+  }
+
   const sortedTokens = [...hotTokens].sort((a, b) => b.trendScore - a.trendScore);
 
   const getBubbleSize = (score: number, maxScore: number, index: number) => {
@@ -39,7 +83,7 @@ const HotTokens = () => {
     return Math.max(baseSize, baseSize + (maxSize - baseSize) * ratio + variation);
   };
 
-  const maxScore = Math.max(...hotTokens.map(token => token.trendScore));
+  const maxScore = Math.max(...hotTokens.map(token => token.trendScore), 1); // Ensure no division by zero
 
   const getTextSizes = (bubbleSize: number) => {
     const iconSize = Math.max(16, bubbleSize / 6);
@@ -48,6 +92,25 @@ const HotTokens = () => {
     
     return { iconSize, symbolSize, scoreSize };
   };
+
+  if (isLoading) {
+    return (
+      <div className="bg-gradient-to-br from-slate-800/50 to-orange-900/30 backdrop-blur-sm border border-orange-500/20 rounded-2xl p-6 shadow-2xl shadow-orange-500/10">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">
+            Hot Tokens
+          </h2>
+        </div>
+        <div className="min-h-[400px] flex items-center justify-center">
+          <div className="text-gray-400 text-lg">Loading hot tokens...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    console.error('🎯 Token rankings API error:', error);
+  }
 
   return (
     <div className="bg-gradient-to-br from-slate-800/50 to-orange-900/30 backdrop-blur-sm border border-orange-500/20 rounded-2xl p-6 shadow-2xl shadow-orange-500/10">
