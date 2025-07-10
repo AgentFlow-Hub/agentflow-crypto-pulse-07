@@ -19,6 +19,16 @@ interface KOL {
 const Top20KOLs = () => {
   const { data: kolRankingsData, isLoading, error } = useKOLRankings(20, false);
   
+  // Debug logging to see actual data structure
+  console.log('🔍 KOL Raw Data:', {
+    data: kolRankingsData,
+    hasData: !!kolRankingsData,
+    keys: kolRankingsData ? Object.keys(kolRankingsData) : null,
+    kolRankings: kolRankingsData?.kol_rankings,
+    firstKOL: kolRankingsData?.kol_rankings?.[0],
+    sampleFields: kolRankingsData?.kol_rankings?.[0] ? Object.keys(kolRankingsData.kol_rankings[0]) : null
+  });
+  
   const formatFollowers = (count: number | null | undefined) => {
     if (count === null || count === undefined) {
       return "N/A";
