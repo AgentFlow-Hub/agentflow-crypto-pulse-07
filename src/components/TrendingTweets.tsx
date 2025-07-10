@@ -57,13 +57,16 @@ const TrendingTweets = () => {
     }
   ];
 
-  // Use API data or fallback
-  const tweets = trendingTweetsData?.tweets?.map(tweet => ({
-    ...tweet,
-    avatar: tweet.avatar || '🔥',
-    hashtags: tweet.hashtags || [],
-    keywords: tweet.keywords || []
-  })) || fallbackTweets;
+  // Use API data or fallback (use fallback if API returns empty array)
+  const apiTweets = trendingTweetsData?.trending_tweets || [];
+  const tweets = apiTweets.length > 0 
+    ? apiTweets.map(tweet => ({
+        ...tweet,
+        avatar: tweet.avatar || '🔥',
+        hashtags: tweet.hashtags || [],
+        keywords: tweet.keywords || []
+      }))
+    : fallbackTweets;
 
   const formatNumber = (num: number) => {
     if (num >= 1000) {

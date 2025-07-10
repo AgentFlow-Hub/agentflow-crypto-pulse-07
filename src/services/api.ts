@@ -72,9 +72,17 @@ export interface TrendingTweet {
 }
 
 export interface TrendingTweetsResponse {
-  tweets: TrendingTweet[];
-  total_count: number;
-  timestamp: string;
+  trending_tweets: TrendingTweet[];
+  metadata: {
+    total_count: number;
+    parameters: {
+      limit: number;
+      hours_back: number;
+      min_engagement: number;
+      top_tokens_limit: number;
+    };
+    generated_at: string;
+  };
 }
 
 // API Service Class
