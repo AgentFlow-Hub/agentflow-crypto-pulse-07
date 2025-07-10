@@ -29,28 +29,33 @@ const Top20KOLs = () => {
     kolRankings: kolRankingsData?.kol_rankings || 'No kol_rankings property'
   });
   
-  const formatFollowers = (count: number) => {
-    if (count >= 1000000) {
-      return `${(count / 1000000).toFixed(1)}M`;
-    } else if (count >= 1000) {
-      return `${(count / 1000).toFixed(0)}K`;
+  const formatFollowers = (count: number | null | undefined) => {
+    const safeCount = count || 0;
+    if (safeCount >= 1000000) {
+      return `${(safeCount / 1000000).toFixed(1)}M`;
+    } else if (safeCount >= 1000) {
+      return `${(safeCount / 1000).toFixed(0)}K`;
     }
-    return count.toString();
+    return safeCount.toString();
   };
 
-  // Use API data with correct property names
+  const safeToFixed = (value: number | null | undefined, decimals: number = 1) => {
+    return (value || 0).toFixed(decimals);
+  };
+
+  // Use API data with correct property names and safe defaults
   const kols: KOL[] = kolRankingsData?.kol_rankings?.length > 0 
     ? kolRankingsData.kol_rankings.map((kol) => ({
-        rank: kol.rank,
-        username: kol.username,
-        name: kol.name,
-        authorityScore: kol.authority_score,
-        followersCount: kol.followers_count,
-        engagementRate: kol.engagement_rate,
-        followerQuality: kol.follower_quality,
-        cryptoExpertise: kol.crypto_expertise,
-        isVerified: kol.is_verified,
-        profileImage: kol.profile_picture
+        rank: kol.rank || 0,
+        username: kol.username || 'Unknown',
+        name: kol.name || 'Unknown User',
+        authorityScore: kol.authority_score || 0,
+        followersCount: kol.followers_count || 0,
+        engagementRate: kol.engagement_rate || 0,
+        followerQuality: kol.follower_quality || 0,
+        cryptoExpertise: kol.crypto_expertise || 0,
+        isVerified: kol.is_verified || false,
+        profileImage: kol.profile_picture || '/placeholder.svg'
       }))
     : [];
 
@@ -164,7 +169,7 @@ const Top20KOLs = () => {
                 <span className="text-xs text-gray-400">Authority</span>
               </div>
               <div className="text-2xl font-bold text-yellow-400">
-                {kol.authorityScore.toFixed(1)}
+                {safeToFixed(kol.authorityScore, 1)}
               </div>
             </div>
             
@@ -186,21 +191,21 @@ const Top20KOLs = () => {
                   <span className="text-gray-400">Engagement</span>
                 </div>
                 <div className="text-green-400 font-semibold">
-                  {(kol.engagementRate * 100).toFixed(1)}%
+                  {safeToFixed((kol.engagementRate || 0) * 100, 1)}%
                 </div>
               </div>
               
               <div className="text-center">
                 <span className="text-gray-400">Quality</span>
                 <div className="text-blue-400 font-semibold">
-                  {kol.followerQuality.toFixed(1)}
+                  {safeToFixed(kol.followerQuality, 1)}
                 </div>
               </div>
               
               <div className="text-center">
                 <span className="text-gray-400">Expertise</span>
                 <div className="text-purple-400 font-semibold">
-                  {kol.cryptoExpertise.toFixed(1)}
+                  {safeToFixed(kol.cryptoExpertise, 1)}
                 </div>
               </div>
             </div>
