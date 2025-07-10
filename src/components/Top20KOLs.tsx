@@ -17,38 +17,7 @@ interface KOL {
 }
 
 const Top20KOLs = () => {
-  // Test both endpoints to compare data
-  const { data: chartData, isLoading: chartLoading, error: chartError } = useKOLRankings(20, true);
-  const { data: regularData, isLoading: regularLoading, error: regularError } = useKOLRankings(20, false);
-  
-  // Comprehensive endpoint comparison logging
-  console.log('🔍 KOL Endpoints Comparison:', {
-    chartEndpoint: {
-      data: chartData,
-      loading: chartLoading,
-      error: chartError,
-      dataType: typeof chartData,
-      isArray: Array.isArray(chartData),
-      keys: chartData ? Object.keys(chartData) : null,
-      firstItem: chartData?.kol_rankings?.[0] || (chartData as any)?.[0],
-      dataLength: chartData?.kol_rankings?.length || (chartData as any)?.length || 0
-    },
-    regularEndpoint: {
-      data: regularData,
-      loading: regularLoading,
-      error: regularError,
-      dataType: typeof regularData,
-      isArray: Array.isArray(regularData),
-      keys: regularData ? Object.keys(regularData) : null,
-      firstItem: regularData?.kol_rankings?.[0] || (regularData as any)?.[0],
-      dataLength: regularData?.kol_rankings?.length || (regularData as any)?.length || 0
-    }
-  });
-
-  // Use chart data if available, fallback to regular data
-  const kolRankingsData = chartData || regularData;
-  const isLoading = chartLoading || regularLoading;
-  const error = chartError || regularError;
+  const { data: kolRankingsData, isLoading, error } = useKOLRankings(20, false);
   
   const formatFollowers = (count: number | null | undefined) => {
     if (count === null || count === undefined) {
