@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useKOLRankings } from '../hooks/useMarketData';
 import { Users, Award, TrendingUp, CheckCircle } from 'lucide-react';
 
@@ -26,8 +26,45 @@ const Top20KOLs = () => {
     keys: kolRankingsData ? Object.keys(kolRankingsData) : null,
     kolRankings: kolRankingsData?.kol_rankings,
     firstKOL: kolRankingsData?.kol_rankings?.[0],
-    sampleFields: kolRankingsData?.kol_rankings?.[0] ? Object.keys(kolRankingsData.kol_rankings[0]) : null
+    sampleFields: kolRankingsData?.kol_rankings?.[0] ? Object.keys(kolRankingsData.kol_rankings[0]) : null,
+    isLoading,
+    error: error?.message || error
   });
+
+  // Direct API test for comparison
+  useEffect(() => {
+    const testDirectFetch = async () => {
+      try {
+        console.log('🧪 Testing direct fetch to chart endpoint...');
+        const directResponse = await fetch('https://agentflow-api-1049105662092.europe-west1.run.app/api/kol-rankings/chart?limit=20', {
+          method: 'GET',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+          }
+        });
+        const directData = await directResponse.json();
+        console.log('🧪 Direct fetch result:', directData);
+        
+        console.log('🧪 Testing direct fetch to regular endpoint...');
+        const regularResponse = await fetch('https://agentflow-api-1049105662092.europe-west1.run.app/api/kol-rankings?limit=20', {
+          method: 'GET',
+          headers: {
+            'accept': 'application/json',
+            'Content-Type': 'application/json',
+          }
+        });
+        const regularData = await regularResponse.json();
+        console.log('🧪 Regular fetch result:', regularData);
+      } catch (error) {
+        console.error('🧪 Direct fetch failed:', error);
+      }
+    };
+    
+    if (!kolRankingsData && !isLoading) {
+      testDirectFetch();
+    }
+  }, [kolRankingsData, isLoading]);
   
   const formatFollowers = (count: number | null | undefined) => {
     if (count === null || count === undefined) {

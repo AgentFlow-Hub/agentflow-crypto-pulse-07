@@ -58,12 +58,22 @@ export const useHotTrends = (hoursBack: number = 24, limit: number = 30) => {
 export const useKOLRankings = (limit: number = 20, chartFormat: boolean = false) => {
   return useQuery({
     queryKey: ['kolRankings', limit, chartFormat],
-    queryFn: () => chartFormat 
-      ? apiService.getKOLRankingsChart(limit) 
-      : apiService.getKOLRankings(limit),
+    queryFn: async () => {
+      console.log(`🎯 useKOLRankings hook called with limit: ${limit}, chartFormat: ${chartFormat}`);
+      try {
+        const result = chartFormat 
+          ? await apiService.getKOLRankingsChart(limit) 
+          : await apiService.getKOLRankings(limit);
+        console.log(`✅ useKOLRankings hook success:`, result);
+        return result;
+      } catch (error) {
+        console.error(`❌ useKOLRankings hook error:`, error);
+        throw error;
+      }
+    },
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
-    retry: 3,
+    retry: 3
   });
 };
 
