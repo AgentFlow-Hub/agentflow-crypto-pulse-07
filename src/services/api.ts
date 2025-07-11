@@ -107,11 +107,11 @@ export interface KOLRanking {
   rank: number;
   username: string;
   name: string;
-  authority_score: number;
+  base_authority_score: number;
   followers_count: number;
-  engagement_rate: number;
-  follower_quality: number;
-  crypto_expertise: number;
+  historical_engagement_rate: number;
+  follower_quality_score: number;
+  crypto_expertise_bonus: number;
   is_verified: boolean;
   profile_picture: string;
 }

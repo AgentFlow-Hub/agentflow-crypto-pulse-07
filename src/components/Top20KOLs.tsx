@@ -19,52 +19,12 @@ interface KOL {
 const Top20KOLs = () => {
   const { data: kolRankingsData, isLoading, error } = useKOLRankings(20, false);
   
-  // Debug logging to see actual data structure
-  console.log('🔍 KOL Raw Data:', {
-    data: kolRankingsData,
+  // Clean debug logging
+  console.log('🔍 KOL Data:', {
     hasData: !!kolRankingsData,
-    keys: kolRankingsData ? Object.keys(kolRankingsData) : null,
-    kolRankings: kolRankingsData?.kol_rankings,
-    firstKOL: kolRankingsData?.kol_rankings?.[0],
-    sampleFields: kolRankingsData?.kol_rankings?.[0] ? Object.keys(kolRankingsData.kol_rankings[0]) : null,
-    isLoading,
-    error: error?.message || error
+    count: kolRankingsData?.kol_rankings?.length,
+    firstKOL: kolRankingsData?.kol_rankings?.[0]
   });
-
-  // Direct API test for comparison
-  useEffect(() => {
-    const testDirectFetch = async () => {
-      try {
-        console.log('🧪 Testing direct fetch to chart endpoint...');
-        const directResponse = await fetch('https://agentflow-api-1049105662092.europe-west1.run.app/api/kol-rankings/chart?limit=20', {
-          method: 'GET',
-          headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json',
-          }
-        });
-        const directData = await directResponse.json();
-        console.log('🧪 Direct fetch result:', directData);
-        
-        console.log('🧪 Testing direct fetch to regular endpoint...');
-        const regularResponse = await fetch('https://agentflow-api-1049105662092.europe-west1.run.app/api/kol-rankings?limit=20', {
-          method: 'GET',
-          headers: {
-            'accept': 'application/json',
-            'Content-Type': 'application/json',
-          }
-        });
-        const regularData = await regularResponse.json();
-        console.log('🧪 Regular fetch result:', regularData);
-      } catch (error) {
-        console.error('🧪 Direct fetch failed:', error);
-      }
-    };
-    
-    if (!kolRankingsData && !isLoading) {
-      testDirectFetch();
-    }
-  }, [kolRankingsData, isLoading]);
   
   const formatFollowers = (count: number | null | undefined) => {
     if (count === null || count === undefined) {
@@ -97,11 +57,11 @@ const Top20KOLs = () => {
         rank: kol.rank || 0,
         username: kol.username || 'Unknown',
         name: kol.name || 'Unknown User',
-        authorityScore: kol.authority_score || 0,
+        authorityScore: kol.base_authority_score || 0,
         followersCount: kol.followers_count || 0,
-        engagementRate: kol.engagement_rate || 0,
-        followerQuality: kol.follower_quality || 0,
-        cryptoExpertise: kol.crypto_expertise || 0,
+        engagementRate: kol.historical_engagement_rate || 0,
+        followerQuality: kol.follower_quality_score || 0,
+        cryptoExpertise: kol.crypto_expertise_bonus || 0,
         isVerified: kol.is_verified || false,
         profileImage: kol.profile_picture || '/placeholder.svg'
       }))
