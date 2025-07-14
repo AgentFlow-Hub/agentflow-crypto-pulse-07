@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { useTokenHeatmap } from '../hooks/useMarketData';
+import TokenHeatMapEnhanced from './TokenHeatMapEnhanced';
 
 interface Token {
   name: string;
@@ -128,107 +129,8 @@ const TokenHeatMap = () => {
     );
   }
 
-  return (
-    <div className="h-full flex flex-col overflow-hidden">
-      {/* Header with refresh button */}
-      {isLoading && (
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <RefreshCw className="w-4 h-4 animate-spin text-purple-400" />
-            <span className="text-sm text-gray-400">
-              {heatmapData ? 'Updating live data...' : 'Loading token data...'}
-            </span>
-          </div>
-        </div>
-      )}
-      
-      {/* Data source indicator */}
-      {!isLoading && (
-        <div className="mb-2">
-          <div className="text-xs text-gray-500">
-            {heatmapData ? '🟢 Live API Data' : '🟡 Fallback Data (API unavailable)'}
-          </div>
-        </div>
-      )}
-      
-      {/* Seamless Token Grid - No spacing, borders, or wrappers */}
-      <div className="flex-1 overflow-hidden">
-        <div className="w-full h-full flex flex-wrap content-start overflow-hidden">
-          {sortedTokens.slice(0, 20).map((token) => {
-            const colorClass = getTokenColor(token.priceChange);
-            const textColorClass = getTextColor(token.priceChange);
-            
-            return (
-              <div
-                key={token.name}
-                className={`
-                  ${colorClass} ${textColorClass}
-                  flex flex-col justify-center items-center cursor-pointer
-                  transition-all duration-300 hover:brightness-110
-                  hover:z-10 relative
-                  ${isLoading ? 'animate-pulse' : ''}
-                `}
-                style={{ 
-                  width: '20%',
-                  height: '80px'
-                }}
-                onMouseEnter={() => setHoveredToken(token)}
-                onMouseLeave={() => setHoveredToken(null)}
-              >
-                {/* Token Name */}
-                <div className="font-bold text-sm mb-1 text-center leading-tight">
-                  {token.name}
-                </div>
-                
-                {/* Price */}
-                <div className="font-medium text-xs mb-1 text-center opacity-90">
-                  {isLoading ? '...' : token.price}
-                </div>
-                
-                {/* Price Change */}
-                <div className="font-semibold text-center text-sm">
-                  {isLoading ? '...' : `${token.priceChange > 0 ? '+' : ''}${token.priceChange.toFixed(1)}%`}
-                </div>
-
-                {/* Hover Tooltip */}
-                {hoveredToken === token && !isLoading && (
-                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 z-20">
-                    <div className="bg-gray-900/95 backdrop-blur-sm border border-gray-600/50 rounded-lg p-3 shadow-xl min-w-[180px]">
-                      <div className="text-white font-bold mb-2 text-sm">{token.name}</div>
-                      <div className="space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Price:</span>
-                          <span className="text-white">{token.price}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Change:</span>
-                          <span className={token.priceChange > 0 ? 'text-green-400' : 'text-red-400'}>
-                            {token.priceChange > 0 ? '+' : ''}{token.priceChange.toFixed(1)}%
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Mentions:</span>
-                          <span className="text-white">{token.mentions.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Market Cap:</span>
-                          <span className="text-white">${formatMarketCap(token.marketCap)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Volume:</span>
-                          <span className="text-white">${formatVolume(token.volume)}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
+  // Use the enhanced version by default
+  return <TokenHeatMapEnhanced />;
 };
 
 export default TokenHeatMap;

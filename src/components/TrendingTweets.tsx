@@ -145,19 +145,16 @@ const TrendingTweets = () => {
   }
 
   return (
-    <div className="h-full flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col">
       {error && (
-        <div className="mb-2 text-xs text-amber-400 bg-amber-900/20 border border-amber-700/50 rounded px-2 py-1">
+        <div className="mb-2 text-xs text-amber-400 bg-amber-900/20 border border-amber-700/50 rounded px-2 py-1 flex-shrink-0">
           Using fallback data
         </div>
       )}
-      {/* Tweets Container - Full Height */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto pr-2 custom-scrollbar" style={{
-          scrollbarWidth: 'thin',
-          scrollbarColor: '#4a5568 transparent'
-        }}>
-          <div className="space-y-3">
+      {/* Tweets Container - Constrained to container bounds */}
+      <div className="flex-1 min-h-0">
+        <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
+          <div className="space-y-3 pb-4">
             {tweets.map((tweet, index) => (
               <div
                 key={tweet.id}
