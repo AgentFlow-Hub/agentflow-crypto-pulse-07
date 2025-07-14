@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Flame, AlertCircle, RefreshCw, TrendingUp, TrendingDown, Eye, Heart, Trophy, Zap } from 'lucide-react';
+import { Flame, AlertCircle, RefreshCw, TrendingUp, TrendingDown, Eye, Heart, Trophy, Zap, BarChart3, DollarSign } from 'lucide-react';
 import { useTokenSocialRankings } from '../hooks/useMarketData';
 
 interface HotTokenData {
@@ -121,9 +121,86 @@ const TokenDetailModal = ({ token, isOpen, onClose }: TokenDetailModalProps) => 
   );
 };
 
+// Hover Tooltip Component
+const HoverTooltip = ({ token, position, maxScore }: { token: HotTokenData; position: { x: number; y: number }; maxScore: number }) => {
+  return (
+    <div 
+      className="fixed z-50 pointer-events-none"
+      style={{
+        left: `${position.x + 20}px`,
+        top: `${position.y - 80}px`,
+        transform: 'translateY(-50%)'
+      }}
+    >
+      <div className="bg-gradient-to-br from-slate-800/95 to-orange-900/95 backdrop-blur-lg border border-orange-500/30 rounded-xl p-4 shadow-2xl shadow-orange-500/20 min-w-[280px] animate-scale-in">
+        {/* Header */}
+        <div className="flex items-center space-x-3 mb-3">
+          <div className="w-8 h-8 bg-gradient-to-r from-orange-500 to-red-500 rounded-full flex items-center justify-center text-white font-bold">
+            {token.icon}
+          </div>
+          <div>
+            <h4 className="text-white font-bold">{token.symbol}</h4>
+            <p className="text-xs text-gray-300">{token.name}</p>
+          </div>
+          <div className="ml-auto">
+            <div className="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full px-2 py-1 text-xs font-bold text-white">
+              #{token.rank}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 gap-3 mb-3">
+          <div className="bg-orange-500/20 rounded-lg p-2 border border-orange-500/30">
+            <div className="flex items-center space-x-1 mb-1">
+              <Flame className="w-3 h-3 text-red-400" />
+              <span className="text-xs text-gray-300">Trend Score</span>
+            </div>
+            <div className="text-sm font-bold text-white">
+              {token.trendScore > 1000 
+                ? `${(token.trendScore / 1000).toFixed(1)}K`
+                : token.trendScore.toString()
+              }
+            </div>
+          </div>
+          
+          <div className="bg-blue-500/20 rounded-lg p-2 border border-blue-500/30">
+            <div className="flex items-center space-x-1 mb-1">
+              <BarChart3 className="w-3 h-3 text-blue-400" />
+              <span className="text-xs text-gray-300">Heat Level</span>
+            </div>
+            <div className="text-sm font-bold text-white">
+              {token.rank <= 3 ? 'EXTREME' : token.rank <= 6 ? 'HIGH' : 'MODERATE'}
+            </div>
+          </div>
+        </div>
+
+        {/* Performance */}
+        <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-lg p-2 border border-green-500/30">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-xs text-gray-300">Performance</span>
+              <div className="text-sm font-bold text-white">
+                {token.rank <= 3 ? '🔥 Blazing' : token.rank <= 6 ? '⚡ Hot' : '📈 Rising'}
+              </div>
+            </div>
+            <div className="text-green-400 text-xs">
+              +{Math.round((token.trendScore / maxScore) * 100)}%
+            </div>
+          </div>
+        </div>
+
+        {/* Tooltip Arrow */}
+        <div className="absolute left-[-8px] top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-8 border-b-8 border-r-8 border-transparent border-r-orange-500/30"></div>
+      </div>
+    </div>
+  );
+};
+
 const HotTokensEnhanced = () => {
   const [activeTimeframe, setActiveTimeframe] = useState('1D');
   const [hoveredToken, setHoveredToken] = useState<HotTokenData | null>(null);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
   const [selectedToken, setSelectedToken] = useState<HotTokenData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -306,7 +383,13 @@ const HotTokensEnhanced = () => {
                   height: `${size}px`,
                   animationDelay: `${index * 0.1}s`
                 }}
-                onMouseEnter={() => setHoveredToken(token)}
+                onMouseEnter={(e) => {
+                  setHoveredToken(token);
+                  setHoverPosition({ x: e.clientX, y: e.clientY });
+                }}
+                onMouseMove={(e) => {
+                  setHoverPosition({ x: e.clientX, y: e.clientY });
+                }}
                 onMouseLeave={() => setHoveredToken(null)}
                 onClick={() => handleTokenClick(token)}
               >
@@ -338,14 +421,26 @@ const HotTokensEnhanced = () => {
                     </div>
                   )}
 
-                  {/* Favorite Button */}
+                  {/* Favorite Button - Improved positioning and styling */}
                   <button
                     onClick={(e) => toggleFavorite(token.symbol, e)}
-                    className={`absolute top-1 left-1 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 z-10 ${
-                      isFavorite ? 'bg-yellow-400 text-yellow-900' : 'bg-black/20 text-white/60 hover:bg-black/40'
-                    }`}
+                    className={`
+                      absolute -top-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center 
+                      transition-all duration-300 z-20 border-2 transform hover:scale-110 group/heart
+                      ${isFavorite 
+                        ? 'bg-gradient-to-r from-red-500 to-pink-500 border-red-400 text-white shadow-lg shadow-red-500/50' 
+                        : 'bg-black/30 border-white/20 text-white/70 hover:bg-black/50 hover:border-white/40 backdrop-blur-sm'
+                      }
+                    `}
                   >
-                    <Heart className={`w-3 h-3 ${isFavorite ? 'fill-current' : ''}`} />
+                    <Heart className={`w-4 h-4 transition-all duration-300 ${
+                      isFavorite 
+                        ? 'fill-current scale-110 animate-pulse' 
+                        : 'group-hover/heart:scale-110 group-hover/heart:text-red-400'
+                    }`} />
+                    {isFavorite && (
+                      <div className="absolute inset-0 rounded-full animate-ping bg-red-400/20" />
+                    )}
                   </button>
                   
                   <div className="text-center z-10 relative flex flex-col items-center justify-center h-full space-y-1">
@@ -399,6 +494,11 @@ const HotTokensEnhanced = () => {
           })}
         </div>
       </div>
+
+      {/* Hover Tooltip */}
+      {hoveredToken && (
+        <HoverTooltip token={hoveredToken} position={hoverPosition} maxScore={maxScore} />
+      )}
 
       {/* Legend */}
       <div className="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-400 flex-shrink-0">
