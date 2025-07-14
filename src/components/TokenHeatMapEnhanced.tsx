@@ -252,7 +252,7 @@ const TokenHeatMapEnhanced = () => {
 
       {/* Enhanced Token Grid */}
       <div className="flex-1 min-h-0">
-        <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 h-full overflow-y-auto pr-2">
+        <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 h-full overflow-hidden">
           {sortedTokens.map((token, index) => {
             const isFavorite = favorites.has(token.name);
             

@@ -297,10 +297,40 @@ const HotTrendsExplorer = () => {
 
   const handleWordHover = useCallback((word: TrendWord, event: React.MouseEvent) => {
     setHoveredWord(word.word);
+    
+    // Smart tooltip positioning to keep it on screen
+    const rect = event.currentTarget.getBoundingClientRect();
+    const tooltipWidth = 280;
+    const tooltipHeight = 160;
+    const margin = 16;
+    
+    let x = event.clientX;
+    let y = event.clientY;
+    
+    // Adjust horizontal position if tooltip would go off-screen
+    if (x + tooltipWidth + margin > window.innerWidth) {
+      x = event.clientX - tooltipWidth - margin;
+    }
+    
+    // Adjust vertical position if tooltip would go off-screen
+    if (y + tooltipHeight + margin > window.innerHeight) {
+      y = event.clientY - tooltipHeight - margin;
+    }
+    
+    // Ensure tooltip doesn't go off left edge
+    if (x < margin) {
+      x = margin;
+    }
+    
+    // Ensure tooltip doesn't go off top edge
+    if (y < margin) {
+      y = event.clientY + margin;
+    }
+    
     setTooltip({
       word,
-      x: event.clientX,
-      y: event.clientY
+      x,
+      y
     });
     
     // Apply magnetic effect to nearby words
@@ -401,21 +431,6 @@ const HotTrendsExplorer = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.1),transparent_50%)]"></div>
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.1),transparent_50%)]"></div>
         
-        {/* Floating particles background */}
-        <div className="absolute inset-0">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-white/20 rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
-              }}
-            />
-          ))}
-        </div>
 
         <div className="absolute inset-0 p-8" style={{ width: '100%', height: '500px' }}>
           {trendWords
