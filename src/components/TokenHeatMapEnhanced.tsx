@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { AlertCircle, RefreshCw, TrendingUp, TrendingDown, Eye, Heart } from 'lucide-react';
+import { AlertCircle, RefreshCw, TrendingUp, TrendingDown, Eye } from 'lucide-react';
 import { useTokenHeatmap } from '../hooks/useMarketData';
 
 interface Token {
@@ -122,7 +122,6 @@ const TokenHeatMapEnhanced = () => {
   const [hoveredToken, setHoveredToken] = useState<Token | null>(null);
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const { data: heatmapData, isLoading, error, refetch, isFetching } = useTokenHeatmap(20);
 
   const transformTokens = (): Token[] => {
@@ -163,7 +162,6 @@ const TokenHeatMapEnhanced = () => {
 
   const getTokenStyle = (token: Token, index: number) => {
     const isHovered = hoveredToken === token;
-    const isFavorite = favorites.has(token.name);
     
     let bgColor = '';
     if (token.priceChange >= 10) bgColor = 'from-green-600 to-green-500';
@@ -177,7 +175,6 @@ const TokenHeatMapEnhanced = () => {
     return `
       bg-gradient-to-br ${bgColor} 
       ${isHovered ? 'scale-110 shadow-2xl z-20 brightness-110' : 'scale-100'} 
-      ${isFavorite ? 'ring-2 ring-yellow-400' : ''}
       transition-all duration-300 ease-out
       cursor-pointer relative overflow-hidden
       hover:shadow-lg hover:shadow-blue-500/30
@@ -190,18 +187,6 @@ const TokenHeatMapEnhanced = () => {
     setIsModalOpen(true);
   }, []);
 
-  const toggleFavorite = useCallback((tokenName: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFavorites(prev => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(tokenName)) {
-        newFavorites.delete(tokenName);
-      } else {
-        newFavorites.add(tokenName);
-      }
-      return newFavorites;
-    });
-  }, []);
 
   const tokens = transformTokens();
   const sortedTokens = [...tokens].sort((a, b) => b.marketCap - a.marketCap);
@@ -252,16 +237,14 @@ const TokenHeatMapEnhanced = () => {
 
       {/* Enhanced Token Grid */}
       <div className="flex-1 min-h-0">
-        <div className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-2 h-full overflow-hidden">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-1.5 h-full overflow-hidden">
           {sortedTokens.map((token, index) => {
-            const isFavorite = favorites.has(token.name);
-            
             return (
               <div
                 key={token.name}
                 className={getTokenStyle(token, index)}
                 style={{ 
-                  aspectRatio: '1',
+                  aspectRatio: '1.1',
                   animationDelay: `${index * 0.05}s`
                 }}
                 onMouseEnter={() => setHoveredToken(token)}
@@ -270,26 +253,16 @@ const TokenHeatMapEnhanced = () => {
               >
                 {/* Shimmer Effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000" />
-                
-                {/* Favorite Button */}
-                <button
-                  onClick={(e) => toggleFavorite(token.name, e)}
-                  className={`absolute top-1 right-1 w-6 h-6 rounded-full flex items-center justify-center transition-all duration-300 ${
-                    isFavorite ? 'bg-yellow-400 text-yellow-900' : 'bg-black/20 text-white/60 hover:bg-black/40'
-                  }`}
-                >
-                  <Heart className={`w-3 h-3 ${isFavorite ? 'fill-current' : ''}`} />
-                </button>
 
                 {/* Content */}
-                <div className="p-2 h-full flex flex-col justify-center items-center text-white relative z-10">
-                  <div className="font-bold text-sm mb-1 text-center leading-tight">
+                <div className="p-1.5 h-full flex flex-col justify-center items-center text-white relative z-10">
+                  <div className="font-bold text-xs sm:text-sm mb-1 text-center leading-tight">
                     {token.name}
                   </div>
                   <div className="font-medium text-xs mb-1 text-center opacity-90">
                     {isLoading ? '...' : token.price}
                   </div>
-                  <div className="font-semibold text-center text-sm">
+                  <div className="font-semibold text-center text-xs sm:text-sm">
                     {isLoading ? '...' : `${token.priceChange > 0 ? '+' : ''}${token.priceChange.toFixed(1)}%`}
                   </div>
                 </div>

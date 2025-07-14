@@ -385,6 +385,17 @@ const HotTrendsExplorer = () => {
 
   return (
     <div className="space-y-6">
+      {/* Hot Trends Header */}
+      <div className="text-center">
+        <h2 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-3">
+          Hot Trends Explorer
+        </h2>
+        <p className="text-gray-400 text-sm sm:text-base max-w-2xl mx-auto">
+          Discover real-time trending topics across finance, technology, and social media. 
+          Click any trend to dive deeper into the conversation.
+        </p>
+      </div>
+
       {/* Interactive Legend */}
       <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
         {Object.entries(categoryColors).map(([category, colors]) => {
