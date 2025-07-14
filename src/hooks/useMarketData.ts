@@ -1,5 +1,5 @@
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { 
   apiService, 
   MarketOverviewResponse, 
@@ -41,6 +41,29 @@ export const useTrendingTweets = (
     queryFn: () => apiService.getTrendingTweets(limit, hoursBack, minEngagement, topTokensLimit),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    retry: 3,
+  });
+};
+
+export const useInfiniteTrendingTweets = (
+  initialLimit: number = 10,
+  hoursBack: number = 24,
+  minEngagement: number = 10,
+  topTokensLimit: number = 20
+) => {
+  return useInfiniteQuery({
+    queryKey: ['infiniteTrendingTweets', initialLimit, hoursBack, minEngagement, topTokensLimit],
+    queryFn: ({ pageParam = 0 }) => {
+      const offset = pageParam * initialLimit;
+      return apiService.getTrendingTweets(initialLimit, hoursBack, minEngagement, topTokensLimit, offset);
+    },
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      const currentOffset = lastPageParam || 0;
+      const hasMore = lastPage?.trending_tweets?.length === initialLimit;
+      return hasMore ? currentOffset + 1 : undefined;
+    },
+    initialPageParam: 0,
+    staleTime: 2 * 60 * 1000,
     retry: 3,
   });
 };

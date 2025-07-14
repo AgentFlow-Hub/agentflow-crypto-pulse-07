@@ -1,6 +1,7 @@
 
 import { Heart, MessageCircle, Repeat2, Loader2 } from 'lucide-react';
-import { useTrendingTweets } from '../hooks/useMarketData';
+import { useInfiniteTrendingTweets } from '../hooks/useMarketData';
+import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 
 interface Tweet {
   id: string;
@@ -19,12 +20,27 @@ interface Tweet {
 const TrendingTweets = () => {
   console.log('🐦 TrendingTweets component mounting...');
   
-  const { data: trendingTweetsData, isLoading, error } = useTrendingTweets(50, 24, 10, 20);
-  
-  console.log('🐦 TrendingTweets hook state:', { 
-    data: trendingTweetsData, 
+  const { 
+    data: infiniteData, 
     isLoading, 
-    error: error?.message || error 
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  } = useInfiniteTrendingTweets(10, 24, 10, 20);
+
+  const { sentinelRef } = useInfiniteScroll({
+    hasNextPage: hasNextPage ?? false,
+    fetchNextPage,
+    isFetchingNextPage
+  });
+  
+  console.log('🐦 TrendingTweets infinite hook state:', { 
+    data: infiniteData, 
+    isLoading, 
+    error: error?.message || error,
+    hasNextPage,
+    isFetchingNextPage
   });
 
   // Fallback data if API fails
@@ -104,11 +120,12 @@ const TrendingTweets = () => {
   // Use API data or fallback with safe mapping
   let tweets: Tweet[] = [];
   try {
-    const apiTweets = trendingTweetsData?.trending_tweets || [];
-    console.log('🐦 Raw API tweets:', apiTweets);
+    // Flatten all pages of infinite data
+    const allApiTweets = infiniteData?.pages?.flatMap(page => page?.trending_tweets || []) || [];
+    console.log('🐦 Raw API tweets from all pages:', allApiTweets);
     
-    if (apiTweets.length > 0) {
-      tweets = apiTweets.map(mapApiTweet);
+    if (allApiTweets.length > 0) {
+      tweets = allApiTweets.map(mapApiTweet);
       console.log('🐦 Mapped tweets:', tweets);
     } else {
       tweets = fallbackTweets;
@@ -118,9 +135,6 @@ const TrendingTweets = () => {
     console.error('🐦 Error processing tweets:', err);
     tweets = fallbackTweets;
   }
-
-  // Show only 2 tweets to prevent overflow
-  const displayedTweets = tweets.slice(0, 2);
 
   if (isLoading) {
     return (
@@ -139,16 +153,16 @@ const TrendingTweets = () => {
       )}
       {/* Tweets Container - Full Height */}
       <div className="flex-1 overflow-hidden">
-        <div className="h-full overflow-y-auto pr-2" style={{
+        <div className="h-full overflow-y-auto pr-2 custom-scrollbar" style={{
           scrollbarWidth: 'thin',
           scrollbarColor: '#4a5568 transparent'
         }}>
           <div className="space-y-3">
-            {displayedTweets.map((tweet, index) => (
+            {tweets.map((tweet, index) => (
               <div
                 key={tweet.id}
                 className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-lg p-3 hover:border-purple-500/50 transition-all duration-300 animate-fade-in"
-                style={{ animationDelay: `${index * 0.1}s` }}
+                style={{ animationDelay: `${index * 0.05}s` }}
               >
                 {/* Tweet Header */}
                 <div className="flex items-start space-x-3 mb-2">
@@ -189,6 +203,13 @@ const TrendingTweets = () => {
                 </div>
               </div>
             ))}
+            
+            {/* Infinite Scroll Sentinel */}
+            <div ref={sentinelRef} className="h-4 flex items-center justify-center">
+              {isFetchingNextPage && (
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -199,14 +199,16 @@ class ApiService {
     limit: number = 50,
     hoursBack: number = 24,
     minEngagement: number = 10,
-    topTokensLimit: number = 20
+    topTokensLimit: number = 20,
+    offset: number = 0
   ): Promise<TrendingTweetsResponse> {
-    console.log(`🐦 Fetching trending tweets with limit ${limit}`);
+    console.log(`🐦 Fetching trending tweets with limit ${limit}, offset ${offset}`);
     const params = new URLSearchParams({
       limit: limit.toString(),
       hours_back: hoursBack.toString(),
       min_engagement: minEngagement.toString(),
-      top_tokens_limit: topTokensLimit.toString()
+      top_tokens_limit: topTokensLimit.toString(),
+      offset: offset.toString()
     });
     return this.fetchApi<TrendingTweetsResponse>(`/trending-tweets?${params}`);
   }
