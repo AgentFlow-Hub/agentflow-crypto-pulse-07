@@ -255,14 +255,14 @@ const TokenHeatMapEnhanced = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000" />
 
                 {/* Content */}
-                <div className="p-2 h-full flex flex-col justify-center items-center text-white relative z-10">
-                  <div className="font-bold text-sm md:text-base mb-1 text-center leading-tight">
+                <div className="p-3 h-full flex flex-col justify-center items-center text-white relative z-10">
+                  <div className="font-bold text-lg md:text-xl lg:text-2xl mb-2 text-center leading-tight">
                     {token.name}
                   </div>
-                  <div className="font-medium text-xs md:text-sm mb-1 text-center opacity-90">
+                  <div className="font-medium text-sm md:text-base lg:text-lg mb-2 text-center opacity-90">
                     {isLoading ? '...' : token.price}
                   </div>
-                  <div className="font-semibold text-center text-sm md:text-base">
+                  <div className="font-bold text-lg md:text-xl lg:text-2xl text-center">
                     {isLoading ? '...' : `${token.priceChange > 0 ? '+' : ''}${token.priceChange.toFixed(1)}%`}
                   </div>
                 </div>
