@@ -70,21 +70,25 @@ const IndexContent = () => {
         {/* Sections 2 & 3: Side by Side - 520px Height */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           {/* Section 2: Trending Tweets - 520px Height */}
-          <section className="bg-gradient-to-br from-slate-800/50 to-blue-900/30 backdrop-blur-sm border border-blue-500/20 p-6 shadow-2xl shadow-blue-500/10 h-[520px] rounded-md">
-            <div className="mb-6">
+          <section className="bg-gradient-to-br from-slate-800/50 to-blue-900/30 backdrop-blur-sm border border-blue-500/20 p-6 shadow-2xl shadow-blue-500/10 h-[520px] rounded-md flex flex-col">
+            <div className="mb-6 flex-shrink-0">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent mb-2">Trending Tweets</h2>
               <p className="text-gray-400">Latest insights from top crypto influencers</p>
             </div>
-            <TrendingTweets />
+            <div className="flex-1 min-h-0">
+              <TrendingTweets />
+            </div>
           </section>
 
           {/* Section 3: Token Heat Map - 520px Height */}
-          <section className="bg-gradient-to-br from-slate-800/50 to-purple-900/30 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 shadow-2xl shadow-purple-500/10 h-[520px]">
-            <div className="mb-6">
+          <section className="bg-gradient-to-br from-slate-800/50 to-purple-900/30 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6 shadow-2xl shadow-purple-500/10 h-[520px] flex flex-col">
+            <div className="mb-6 flex-shrink-0">
               <h2 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent mb-2">Token Heat Map</h2>
               <p className="text-gray-400">Most mentioned tokens by influence and volume</p>
             </div>
-            <TokenHeatMap />
+            <div className="flex-1 min-h-0">
+              <TokenHeatMap />
+            </div>
           </section>
         </div>
 
