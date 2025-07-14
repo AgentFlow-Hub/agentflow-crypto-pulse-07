@@ -421,22 +421,22 @@ const HotTokensEnhanced = () => {
                     </div>
                   )}
 
-                  {/* Favorite Button - Improved positioning and styling */}
+                  {/* Favorite Button - Fixed positioning and clear states */}
                   <button
                     onClick={(e) => toggleFavorite(token.symbol, e)}
                     className={`
-                      absolute -top-1 -right-1 w-7 h-7 rounded-full flex items-center justify-center 
-                      transition-all duration-300 z-20 border-2 transform hover:scale-110 group/heart
+                      absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center 
+                      transition-all duration-300 z-20 border transform hover:scale-110 shadow-lg
                       ${isFavorite 
-                        ? 'bg-gradient-to-r from-red-500 to-pink-500 border-red-400 text-white shadow-lg shadow-red-500/50' 
-                        : 'bg-black/30 border-white/20 text-white/70 hover:bg-black/50 hover:border-white/40 backdrop-blur-sm'
+                        ? 'bg-red-500 border-red-400 shadow-red-500/50' 
+                        : 'bg-white/95 border-gray-300 shadow-gray-500/30 hover:bg-white hover:border-red-300'
                       }
                     `}
                   >
                     <Heart className={`w-4 h-4 transition-all duration-300 ${
                       isFavorite 
-                        ? 'fill-current scale-110 animate-pulse' 
-                        : 'group-hover/heart:scale-110 group-hover/heart:text-red-400'
+                        ? 'fill-white text-white' 
+                        : 'text-gray-600 hover:text-red-500'
                     }`} />
                     {isFavorite && (
                       <div className="absolute inset-0 rounded-full animate-ping bg-red-400/20" />
