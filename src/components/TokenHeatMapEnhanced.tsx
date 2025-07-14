@@ -161,25 +161,9 @@ const TokenHeatMapEnhanced = () => {
   };
 
   const getTokenStyle = (token: Token, index: number) => {
-    const isHovered = hoveredToken === token;
-    
-    let bgColor = '';
-    if (token.priceChange >= 10) bgColor = 'from-green-600 to-green-500';
-    else if (token.priceChange >= 5) bgColor = 'from-green-500 to-green-400';
-    else if (token.priceChange > 0) bgColor = 'from-green-400 to-green-300';
-    else if (token.priceChange <= -10) bgColor = 'from-red-600 to-red-500';
-    else if (token.priceChange <= -5) bgColor = 'from-red-500 to-red-400';
-    else if (token.priceChange < 0) bgColor = 'from-red-400 to-red-300';
-    else bgColor = 'from-gray-500 to-gray-400';
-
-    return `
-      bg-gradient-to-br ${bgColor} 
-      ${isHovered ? 'scale-110 shadow-2xl z-20 brightness-110' : 'scale-100'} 
-      transition-all duration-300 ease-out
-      cursor-pointer relative overflow-hidden
-      hover:shadow-lg hover:shadow-blue-500/30
-      animate-fade-in
-    `;
+    if (token.priceChange > 0) return 'bg-green-500';
+    else if (token.priceChange < 0) return 'bg-red-500';
+    else return 'bg-gray-500';
   };
 
   const handleTokenClick = useCallback((token: Token) => {
@@ -237,40 +221,29 @@ const TokenHeatMapEnhanced = () => {
 
       {/* Enhanced Token Grid */}
       <div className="flex-1 min-h-0">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
+        <div className="grid grid-cols-5 gap-1">
           {sortedTokens.map((token, index) => {
             return (
               <div
                 key={token.name}
-                className={`${getTokenStyle(token, index)} relative overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg group rounded-lg border`}
+                className={`${getTokenStyle(token, index)} cursor-pointer`}
                 style={{ 
-                  aspectRatio: '1.7',
-                  animationDelay: `${index * 0.05}s`
+                  aspectRatio: '1.8'
                 }}
-                onMouseEnter={() => setHoveredToken(token)}
-                onMouseLeave={() => setHoveredToken(null)}
                 onClick={() => handleTokenClick(token)}
               >
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000" />
-
                 {/* Content */}
-                <div className="p-3 h-full flex flex-col justify-center items-center text-white relative z-10">
-                  <div className="font-bold text-base md:text-lg lg:text-xl mb-1 text-center leading-tight">
+                <div className="p-3 h-full flex flex-col justify-center items-center text-white">
+                  <div className="font-bold text-lg mb-2 text-center leading-tight">
                     {token.name}
                   </div>
-                  <div className="font-medium text-sm md:text-base mb-1 text-center opacity-90">
+                  <div className="font-medium text-base mb-2 text-center">
                     {isLoading ? '...' : token.price}
                   </div>
-                  <div className="font-bold text-base md:text-lg text-center">
+                  <div className="font-bold text-base text-center">
                     {isLoading ? '...' : `${token.priceChange > 0 ? '+' : ''}${token.priceChange.toFixed(1)}%`}
                   </div>
                 </div>
-
-                {/* High Activity Pulse */}
-                {Math.abs(token.priceChange) > 8 && (
-                  <div className="absolute inset-0 rounded-lg animate-pulse bg-white/10" />
-                )}
               </div>
             );
           })}
