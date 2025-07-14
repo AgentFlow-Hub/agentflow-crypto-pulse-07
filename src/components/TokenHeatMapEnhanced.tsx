@@ -237,14 +237,14 @@ const TokenHeatMapEnhanced = () => {
 
       {/* Enhanced Token Grid */}
       <div className="flex-1 min-h-0">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-0.5 h-full overflow-hidden">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-3 md:gap-4">
           {sortedTokens.map((token, index) => {
             return (
               <div
                 key={token.name}
-                className={getTokenStyle(token, index)}
+                className={`${getTokenStyle(token, index)} relative overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg group rounded-lg border`}
                 style={{ 
-                  aspectRatio: '1.4',
+                  aspectRatio: '1.7',
                   animationDelay: `${index * 0.05}s`
                 }}
                 onMouseEnter={() => setHoveredToken(token)}
@@ -256,13 +256,13 @@ const TokenHeatMapEnhanced = () => {
 
                 {/* Content */}
                 <div className="p-3 h-full flex flex-col justify-center items-center text-white relative z-10">
-                  <div className="font-bold text-lg md:text-xl lg:text-2xl mb-2 text-center leading-tight">
+                  <div className="font-bold text-base md:text-lg lg:text-xl mb-1 text-center leading-tight">
                     {token.name}
                   </div>
-                  <div className="font-medium text-sm md:text-base lg:text-lg mb-2 text-center opacity-90">
+                  <div className="font-medium text-sm md:text-base mb-1 text-center opacity-90">
                     {isLoading ? '...' : token.price}
                   </div>
-                  <div className="font-bold text-lg md:text-xl lg:text-2xl text-center">
+                  <div className="font-bold text-base md:text-lg text-center">
                     {isLoading ? '...' : `${token.priceChange > 0 ? '+' : ''}${token.priceChange.toFixed(1)}%`}
                   </div>
                 </div>
