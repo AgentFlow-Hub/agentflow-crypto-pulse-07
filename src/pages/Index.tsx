@@ -107,7 +107,11 @@ const IndexContent = () => {
         </section>
 
         {/* Section 6: Hot Tokens - Full Width */}
-        <section className="mb-8">
+        <section className="mb-8 bg-gradient-to-r from-slate-800/50 to-red-900/30 backdrop-blur-sm border border-red-500/20 rounded-2xl p-6 shadow-2xl shadow-red-500/10">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent mb-2">Hot Tokens</h2>
+            <p className="text-gray-400">Most socially trending tokens by mentions and engagement</p>
+          </div>
           <HotTokens />
         </section>
 
