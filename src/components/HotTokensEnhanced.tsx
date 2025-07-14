@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Flame, AlertCircle, RefreshCw, TrendingUp, TrendingDown, Eye, Heart, Trophy, Zap, BarChart3, DollarSign } from 'lucide-react';
+import { Flame, AlertCircle, RefreshCw, TrendingUp, TrendingDown, Eye, Trophy, Zap, BarChart3, DollarSign } from 'lucide-react';
 import { useTokenSocialRankings } from '../hooks/useMarketData';
 
 interface HotTokenData {
@@ -203,7 +203,6 @@ const HotTokensEnhanced = () => {
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
   const [selectedToken, setSelectedToken] = useState<HotTokenData | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
   
   const timeframes = ['4H', '1D', '1W', '30D'];
   
@@ -290,18 +289,6 @@ const HotTokensEnhanced = () => {
     setIsModalOpen(true);
   }, []);
 
-  const toggleFavorite = useCallback((tokenSymbol: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setFavorites(prev => {
-      const newFavorites = new Set(prev);
-      if (newFavorites.has(tokenSymbol)) {
-        newFavorites.delete(tokenSymbol);
-      } else {
-        newFavorites.add(tokenSymbol);
-      }
-      return newFavorites;
-    });
-  }, []);
 
   const handleRefresh = async () => {
     await refetch();
@@ -372,7 +359,6 @@ const HotTokensEnhanced = () => {
             const size = getBubbleSize(token.trendScore, maxScore, token.rank);
             const { iconSize, symbolSize, scoreSize } = getTextSizes(size);
             const isHovered = hoveredToken === token;
-            const isFavorite = favorites.has(token.symbol);
             
             return (
               <div
@@ -404,7 +390,6 @@ const HotTokensEnhanced = () => {
                       : 'border-orange-400/40 shadow-orange-500/30 bg-gradient-to-br from-orange-400/15 via-red-500/25 to-orange-600/15'
                     }
                     ${isHovered ? 'border-orange-400/90 shadow-orange-500/60 brightness-110' : ''}
-                    ${isFavorite ? 'ring-2 ring-yellow-400' : ''}
                     backdrop-blur-sm animate-fade-in
                   `}
                   style={{ 
@@ -421,27 +406,6 @@ const HotTokensEnhanced = () => {
                     </div>
                   )}
 
-                  {/* Favorite Button - Fixed positioning and clear states */}
-                  <button
-                    onClick={(e) => toggleFavorite(token.symbol, e)}
-                    className={`
-                      absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center 
-                      transition-all duration-300 z-20 border transform hover:scale-110 shadow-lg
-                      ${isFavorite 
-                        ? 'bg-red-500 border-red-400 shadow-red-500/50' 
-                        : 'bg-white/95 border-gray-300 shadow-gray-500/30 hover:bg-white hover:border-red-300'
-                      }
-                    `}
-                  >
-                    <Heart className={`w-4 h-4 transition-all duration-300 ${
-                      isFavorite 
-                        ? 'fill-white text-white' 
-                        : 'text-gray-600 hover:text-red-500'
-                    }`} />
-                    {isFavorite && (
-                      <div className="absolute inset-0 rounded-full animate-ping bg-red-400/20" />
-                    )}
-                  </button>
                   
                   <div className="text-center z-10 relative flex flex-col items-center justify-center h-full space-y-1">
                     {/* Icon with responsive sizing */}
@@ -509,10 +473,6 @@ const HotTokensEnhanced = () => {
         <div className="flex items-center space-x-2">
           <Flame size={14} className="text-red-500" />
           <span>Trend Score</span>
-        </div>
-        <div className="flex items-center space-x-2">
-          <Heart size={14} className="text-yellow-400" />
-          <span>Favorites</span>
         </div>
       </div>
 
