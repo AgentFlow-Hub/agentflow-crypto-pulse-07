@@ -129,24 +129,24 @@ const TokenHeatMapEnhanced = () => {
       return [
         { name: 'BTC', price: '$67,420', priceChange: 2.4, mentions: 15420, marketCap: 1200000000000, volume: 25000000000 },
         { name: 'ETH', price: '$3,245', priceChange: 4.1, mentions: 12890, marketCap: 800000000000, volume: 18000000000 },
-        { name: 'SOL', price: '$189', priceChange: 8.7, mentions: 8934, marketCap: 400000000000, volume: 12000000000 },
-        { name: 'ADA', price: '$0.89', priceChange: -1.2, mentions: 5670, marketCap: 300000000000, volume: 8000000000 },
-        { name: 'DOT', price: '$12.45', priceChange: 3.5, mentions: 4230, marketCap: 250000000000, volume: 6000000000 },
-        { name: 'AVAX', price: '$45.67', priceChange: 6.2, mentions: 3890, marketCap: 200000000000, volume: 5500000000 },
-        { name: 'LINK', price: '$23.89', priceChange: -2.7, mentions: 3450, marketCap: 180000000000, volume: 4800000000 },
-        { name: 'UNI', price: '$8.92', priceChange: -5.1, mentions: 2890, marketCap: 150000000000, volume: 4200000000 },
-        { name: 'MATIC', price: '$1.23', priceChange: 4.9, mentions: 2560, marketCap: 120000000000, volume: 3800000000 },
-        { name: 'ATOM', price: '$15.34', priceChange: 1.7, mentions: 1890, marketCap: 100000000000, volume: 3200000000 },
-        { name: 'ALGO', price: '$0.45', priceChange: -3.2, mentions: 1650, marketCap: 80000000000, volume: 2800000000 },
-        { name: 'XTZ', price: '$2.89', priceChange: 0.8, mentions: 1200, marketCap: 60000000000, volume: 2200000000 },
-        { name: 'NEAR', price: '$4.56', priceChange: 7.3, mentions: 1890, marketCap: 75000000000, volume: 2600000000 },
-        { name: 'FTM', price: '$0.78', priceChange: -2.1, mentions: 1450, marketCap: 55000000000, volume: 2100000000 },
-        { name: 'SAND', price: '$1.12', priceChange: 12.4, mentions: 2340, marketCap: 65000000000, volume: 2400000000 },
-        { name: 'MANA', price: '$0.89', priceChange: 9.8, mentions: 1980, marketCap: 58000000000, volume: 2000000000 },
-        { name: 'APE', price: '$3.45', priceChange: -4.7, mentions: 1670, marketCap: 52000000000, volume: 1900000000 },
-        { name: 'LRC', price: '$0.34', priceChange: 5.6, mentions: 1230, marketCap: 45000000000, volume: 1700000000 },
-        { name: 'CRV', price: '$1.89', priceChange: -1.8, mentions: 1100, marketCap: 42000000000, volume: 1600000000 },
-        { name: 'SUSHI', price: '$2.34', priceChange: 3.2, mentions: 980, marketCap: 38000000000, volume: 1400000000 }
+        { name: 'XRP', price: '$0.89', priceChange: 5.2, mentions: 8934, marketCap: 400000000000, volume: 12000000000 },
+        { name: 'SOL', price: '$189', priceChange: 8.7, mentions: 5670, marketCap: 300000000000, volume: 8000000000 },
+        { name: 'DOGE', price: '$0.12', priceChange: 3.5, mentions: 4230, marketCap: 250000000000, volume: 6000000000 },
+        { name: 'HYPE', price: '$45.67', priceChange: 12.3, mentions: 3890, marketCap: 200000000000, volume: 5500000000 },
+        { name: 'SHIB', price: '$0.000023', priceChange: 6.8, mentions: 3450, marketCap: 180000000000, volume: 4800000000 },
+        { name: 'PEPE', price: '$0.0000089', priceChange: 15.2, mentions: 2890, marketCap: 150000000000, volume: 4200000000 },
+        { name: 'RAO', price: '$1.23', priceChange: 4.9, mentions: 2560, marketCap: 120000000000, volume: 3800000000 },
+        { name: 'ARB', price: '$15.34', priceChange: 7.7, mentions: 1890, marketCap: 100000000000, volume: 3200000000 },
+        { name: 'MATIC', price: '$0.45', priceChange: 2.1, mentions: 1650, marketCap: 80000000000, volume: 2800000000 },
+        { name: 'AVAX', price: '$2.89', priceChange: 5.8, mentions: 1200, marketCap: 60000000000, volume: 2200000000 },
+        { name: 'LINK', price: '$4.56', priceChange: 3.3, mentions: 1890, marketCap: 75000000000, volume: 2600000000 },
+        { name: 'UNI', price: '$0.78', priceChange: 9.1, mentions: 1450, marketCap: 55000000000, volume: 2100000000 },
+        { name: 'ATOM', price: '$1.12', priceChange: 12.4, mentions: 2340, marketCap: 65000000000, volume: 2400000000 },
+        { name: 'DOT', price: '$0.89', priceChange: 6.8, mentions: 1980, marketCap: 58000000000, volume: 2000000000 },
+        { name: 'NEAR', price: '$3.45', priceChange: 4.7, mentions: 1670, marketCap: 52000000000, volume: 1900000000 },
+        { name: 'FTM', price: '$0.34', priceChange: 5.6, mentions: 1230, marketCap: 45000000000, volume: 1700000000 },
+        { name: 'ALGO', price: '$1.89', priceChange: 1.8, mentions: 1100, marketCap: 42000000000, volume: 1600000000 },
+        { name: 'ADA', price: '$2.34', priceChange: 3.2, mentions: 980, marketCap: 38000000000, volume: 1400000000 }
       ].slice(0, 20);
     }
 
@@ -221,26 +221,26 @@ const TokenHeatMapEnhanced = () => {
 
       {/* Enhanced Token Grid */}
       <div className="flex-1 min-h-0">
-        <div className="grid grid-cols-5 gap-1">
+        <div className="grid grid-cols-4 gap-px">
           {sortedTokens.map((token, index) => {
             return (
               <div
                 key={token.name}
                 className={`${getTokenStyle(token, index)} cursor-pointer`}
                 style={{ 
-                  aspectRatio: '1.8'
+                  aspectRatio: '1.4'
                 }}
                 onClick={() => handleTokenClick(token)}
               >
                 {/* Content */}
-                <div className="p-3 h-full flex flex-col justify-center items-center text-white">
-                  <div className="font-bold text-lg mb-2 text-center leading-tight">
+                <div className="p-2 h-full flex flex-col justify-between text-white">
+                  <div className="font-bold text-sm text-center leading-tight">
                     {token.name}
                   </div>
-                  <div className="font-medium text-base mb-2 text-center">
+                  <div className="font-medium text-xs text-center">
                     {isLoading ? '...' : token.price}
                   </div>
-                  <div className="font-bold text-base text-center">
+                  <div className="font-bold text-xs text-center">
                     {isLoading ? '...' : `${token.priceChange > 0 ? '+' : ''}${token.priceChange.toFixed(1)}%`}
                   </div>
                 </div>
