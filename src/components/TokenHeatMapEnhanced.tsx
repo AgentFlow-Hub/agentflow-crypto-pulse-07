@@ -237,14 +237,14 @@ const TokenHeatMapEnhanced = () => {
 
       {/* Enhanced Token Grid */}
       <div className="flex-1 min-h-0">
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8 gap-1.5 h-full overflow-hidden">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-0.5 h-full overflow-hidden">
           {sortedTokens.map((token, index) => {
             return (
               <div
                 key={token.name}
                 className={getTokenStyle(token, index)}
                 style={{ 
-                  aspectRatio: '1.1',
+                  aspectRatio: '1.4',
                   animationDelay: `${index * 0.05}s`
                 }}
                 onMouseEnter={() => setHoveredToken(token)}
@@ -255,14 +255,14 @@ const TokenHeatMapEnhanced = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000" />
 
                 {/* Content */}
-                <div className="p-1.5 h-full flex flex-col justify-center items-center text-white relative z-10">
-                  <div className="font-bold text-xs sm:text-sm mb-1 text-center leading-tight">
+                <div className="p-2 h-full flex flex-col justify-center items-center text-white relative z-10">
+                  <div className="font-bold text-sm md:text-base mb-1 text-center leading-tight">
                     {token.name}
                   </div>
-                  <div className="font-medium text-xs mb-1 text-center opacity-90">
+                  <div className="font-medium text-xs md:text-sm mb-1 text-center opacity-90">
                     {isLoading ? '...' : token.price}
                   </div>
-                  <div className="font-semibold text-center text-xs sm:text-sm">
+                  <div className="font-semibold text-center text-sm md:text-base">
                     {isLoading ? '...' : `${token.priceChange > 0 ? '+' : ''}${token.priceChange.toFixed(1)}%`}
                   </div>
                 </div>
