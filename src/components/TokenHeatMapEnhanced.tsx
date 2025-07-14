@@ -127,26 +127,26 @@ const TokenHeatMapEnhanced = () => {
   const transformTokens = (): Token[] => {
     if (!heatmapData?.tokens) {
       return [
-        { name: 'BTC', price: '$67,420', priceChange: 2.4, mentions: 15420, marketCap: 1200000000000, volume: 25000000000 },
-        { name: 'ETH', price: '$3,245', priceChange: 4.1, mentions: 12890, marketCap: 800000000000, volume: 18000000000 },
-        { name: 'XRP', price: '$0.89', priceChange: 5.2, mentions: 8934, marketCap: 400000000000, volume: 12000000000 },
-        { name: 'SOL', price: '$189', priceChange: 8.7, mentions: 5670, marketCap: 300000000000, volume: 8000000000 },
+        { name: 'BTC', price: '$67,420', priceChange: 8.4, mentions: 15420, marketCap: 1200000000000, volume: 25000000000 },
+        { name: 'ETH', price: '$3,245', priceChange: -2.1, mentions: 12890, marketCap: 800000000000, volume: 18000000000 },
+        { name: 'XRP', price: '$0.89', priceChange: 12.3, mentions: 8934, marketCap: 400000000000, volume: 12000000000 },
+        { name: 'SOL', price: '$189', priceChange: -5.7, mentions: 5670, marketCap: 300000000000, volume: 8000000000 },
         { name: 'DOGE', price: '$0.12', priceChange: 3.5, mentions: 4230, marketCap: 250000000000, volume: 6000000000 },
-        { name: 'HYPE', price: '$45.67', priceChange: 12.3, mentions: 3890, marketCap: 200000000000, volume: 5500000000 },
+        { name: 'HYPE', price: '$45.67', priceChange: 0.0, mentions: 3890, marketCap: 200000000000, volume: 5500000000 },
         { name: 'SHIB', price: '$0.000023', priceChange: 6.8, mentions: 3450, marketCap: 180000000000, volume: 4800000000 },
-        { name: 'PEPE', price: '$0.0000089', priceChange: 15.2, mentions: 2890, marketCap: 150000000000, volume: 4200000000 },
-        { name: 'RAO', price: '$1.23', priceChange: 4.9, mentions: 2560, marketCap: 120000000000, volume: 3800000000 },
-        { name: 'ARB', price: '$15.34', priceChange: 7.7, mentions: 1890, marketCap: 100000000000, volume: 3200000000 },
-        { name: 'MATIC', price: '$0.45', priceChange: 2.1, mentions: 1650, marketCap: 80000000000, volume: 2800000000 },
+        { name: 'PEPE', price: '$0.0000089', priceChange: -8.2, mentions: 2890, marketCap: 150000000000, volume: 4200000000 },
+        { name: 'RAO', price: '$1.23', priceChange: 1.9, mentions: 2560, marketCap: 120000000000, volume: 3800000000 },
+        { name: 'ARB', price: '$15.34', priceChange: 15.7, mentions: 1890, marketCap: 100000000000, volume: 3200000000 },
+        { name: 'MATIC', price: '$0.45', priceChange: -1.1, mentions: 1650, marketCap: 80000000000, volume: 2800000000 },
         { name: 'AVAX', price: '$2.89', priceChange: 5.8, mentions: 1200, marketCap: 60000000000, volume: 2200000000 },
-        { name: 'LINK', price: '$4.56', priceChange: 3.3, mentions: 1890, marketCap: 75000000000, volume: 2600000000 },
+        { name: 'LINK', price: '$4.56', priceChange: -3.3, mentions: 1890, marketCap: 75000000000, volume: 2600000000 },
         { name: 'UNI', price: '$0.78', priceChange: 9.1, mentions: 1450, marketCap: 55000000000, volume: 2100000000 },
-        { name: 'ATOM', price: '$1.12', priceChange: 12.4, mentions: 2340, marketCap: 65000000000, volume: 2400000000 },
-        { name: 'DOT', price: '$0.89', priceChange: 6.8, mentions: 1980, marketCap: 58000000000, volume: 2000000000 },
+        { name: 'ATOM', price: '$1.12', priceChange: -6.4, mentions: 2340, marketCap: 65000000000, volume: 2400000000 },
+        { name: 'DOT', price: '$0.89', priceChange: 2.8, mentions: 1980, marketCap: 58000000000, volume: 2000000000 },
         { name: 'NEAR', price: '$3.45', priceChange: 4.7, mentions: 1670, marketCap: 52000000000, volume: 1900000000 },
-        { name: 'FTM', price: '$0.34', priceChange: 5.6, mentions: 1230, marketCap: 45000000000, volume: 1700000000 },
-        { name: 'ALGO', price: '$1.89', priceChange: 1.8, mentions: 1100, marketCap: 42000000000, volume: 1600000000 },
-        { name: 'ADA', price: '$2.34', priceChange: 3.2, mentions: 980, marketCap: 38000000000, volume: 1400000000 }
+        { name: 'FTM', price: '$0.34', priceChange: -4.6, mentions: 1230, marketCap: 45000000000, volume: 1700000000 },
+        { name: 'ALGO', price: '$1.89', priceChange: 0.8, mentions: 1100, marketCap: 42000000000, volume: 1600000000 },
+        { name: 'ADA', price: '$2.34', priceChange: 11.2, mentions: 980, marketCap: 38000000000, volume: 1400000000 }
       ].slice(0, 20);
     }
 
@@ -161,9 +161,23 @@ const TokenHeatMapEnhanced = () => {
   };
 
   const getTokenStyle = (token: Token, index: number) => {
-    if (token.priceChange > 0) return 'bg-green-500';
-    else if (token.priceChange < 0) return 'bg-red-500';
-    else return 'bg-gray-500';
+    const change = token.priceChange;
+    
+    if (change === 0) return 'bg-gray-500';
+    
+    if (change > 0) {
+      // Positive changes - green variants
+      if (change >= 10) return 'bg-green-700';        // Dark green for 10%+
+      if (change >= 5) return 'bg-green-600';         // Medium-dark green for 5-10%
+      if (change >= 2) return 'bg-green-500';         // Medium green for 2-5%
+      return 'bg-green-400';                          // Light green for 0-2%
+    } else {
+      // Negative changes - red variants
+      if (change <= -10) return 'bg-red-700';         // Dark red for -10% or worse
+      if (change <= -5) return 'bg-red-600';          // Medium-dark red for -5% to -10%
+      if (change <= -2) return 'bg-red-500';          // Medium red for -2% to -5%
+      return 'bg-red-400';                            // Light red for 0% to -2%
+    }
   };
 
   const handleTokenClick = useCallback((token: Token) => {
@@ -221,7 +235,7 @@ const TokenHeatMapEnhanced = () => {
 
       {/* Enhanced Token Grid */}
       <div className="flex-1 min-h-0">
-        <div className="grid grid-cols-4 gap-px">
+        <div className="grid grid-cols-5 gap-px">
           {sortedTokens.map((token, index) => {
             return (
               <div
