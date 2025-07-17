@@ -86,11 +86,15 @@ const TrendingTweets = () => {
   // Safe data mapping with error handling
   const mapApiTweet = (tweet: any): Tweet => {
     try {
+      // Extract username and construct handle from it
+      const username = tweet.username || 'Anonymous';
+      const handle = tweet.username ? `@${tweet.username}` : '@unknown';
+      
       return {
         id: tweet.id || `fallback-${Date.now()}`,
-        username: tweet.username || tweet.user_display_name || 'Anonymous',
-        handle: tweet.handle || '@unknown',
-        avatar: tweet.avatar || tweet.user_profile_image_url || '🔥',
+        username: username,
+        handle: handle,
+        avatar: (tweet.user_profile_image_url && tweet.user_profile_image_url.trim()) || tweet.avatar || '🔥',
         content: tweet.content || tweet.text || 'No content available',
         hashtags: Array.isArray(tweet.hashtags) ? tweet.hashtags : [],
         keywords: Array.isArray(tweet.keywords) ? tweet.keywords : [],
