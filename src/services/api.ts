@@ -197,10 +197,12 @@ class ApiService {
 
   async getTrendingTweets(
     limit: number = 50,
-    hoursBack: number = 24,
+    hoursBack: number = 168,
     minEngagement: number = 10,
     topTokensLimit: number = 20,
-    offset: number = 0
+    offset: number = 0,
+    maxTweetsPerUser: number = 2,
+    diversityBoost: number = 0.3
   ): Promise<TrendingTweetsResponse> {
     console.log(`🐦 Fetching trending tweets with limit ${limit}, offset ${offset}`);
     const params = new URLSearchParams({
@@ -208,7 +210,9 @@ class ApiService {
       hours_back: hoursBack.toString(),
       min_engagement: minEngagement.toString(),
       top_tokens_limit: topTokensLimit.toString(),
-      offset: offset.toString()
+      offset: offset.toString(),
+      max_tweets_per_user: maxTweetsPerUser.toString(),
+      diversity_boost: diversityBoost.toString()
     });
     return this.fetchApi<TrendingTweetsResponse>(`/trending-tweets?${params}`);
   }

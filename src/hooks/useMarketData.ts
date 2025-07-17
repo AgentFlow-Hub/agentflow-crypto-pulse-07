@@ -32,13 +32,15 @@ export const useTokenHeatmap = (limit: number = 20) => {
 
 export const useTrendingTweets = (
   limit: number = 50,
-  hoursBack: number = 24,
+  hoursBack: number = 168,
   minEngagement: number = 10,
-  topTokensLimit: number = 20
+  topTokensLimit: number = 20,
+  maxTweetsPerUser: number = 2,
+  diversityBoost: number = 0.3
 ) => {
   return useQuery({
-    queryKey: ['trendingTweets', limit, hoursBack, minEngagement, topTokensLimit],
-    queryFn: () => apiService.getTrendingTweets(limit, hoursBack, minEngagement, topTokensLimit),
+    queryKey: ['trendingTweets', limit, hoursBack, minEngagement, topTokensLimit, maxTweetsPerUser, diversityBoost],
+    queryFn: () => apiService.getTrendingTweets(limit, hoursBack, minEngagement, topTokensLimit, 0, maxTweetsPerUser, diversityBoost),
     staleTime: 2 * 60 * 1000, // 2 minutes
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     retry: 3,
@@ -46,16 +48,18 @@ export const useTrendingTweets = (
 };
 
 export const useInfiniteTrendingTweets = (
-  initialLimit: number = 10,
-  hoursBack: number = 24,
+  initialLimit: number = 50,
+  hoursBack: number = 168,
   minEngagement: number = 10,
-  topTokensLimit: number = 20
+  topTokensLimit: number = 20,
+  maxTweetsPerUser: number = 2,
+  diversityBoost: number = 0.3
 ) => {
   return useInfiniteQuery({
-    queryKey: ['infiniteTrendingTweets', initialLimit, hoursBack, minEngagement, topTokensLimit],
+    queryKey: ['infiniteTrendingTweets', initialLimit, hoursBack, minEngagement, topTokensLimit, maxTweetsPerUser, diversityBoost],
     queryFn: ({ pageParam = 0 }) => {
       const offset = pageParam * initialLimit;
-      return apiService.getTrendingTweets(initialLimit, hoursBack, minEngagement, topTokensLimit, offset);
+      return apiService.getTrendingTweets(initialLimit, hoursBack, minEngagement, topTokensLimit, offset, maxTweetsPerUser, diversityBoost);
     },
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       const currentOffset = lastPageParam || 0;
