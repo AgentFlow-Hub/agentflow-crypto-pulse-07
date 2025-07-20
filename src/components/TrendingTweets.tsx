@@ -6,6 +6,7 @@ import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
 interface Tweet {
   id: string;
   username: string;
+  displayName: string;
   handle: string;
   avatar: string;
   content: string;
@@ -47,7 +48,8 @@ const TrendingTweets = () => {
   const fallbackTweets: Tweet[] = [
     {
       id: '1',
-      username: 'Crypto Beginner',
+      username: 'cryptonewbie',
+      displayName: 'Crypto Beginner',
       handle: '@cryptonewbie',
       avatar: '🤓',
       content: 'Just bought my first Bitcoin! Started with $50 and learning about dollar-cost averaging. Small steps but excited to be part of this journey! 🚀',
@@ -60,7 +62,8 @@ const TrendingTweets = () => {
     },
     {
       id: '2',
-      username: 'DeFi Explorer',
+      username: 'defilearner',
+      displayName: 'DeFi Explorer',
       handle: '@defilearner',
       avatar: '🔍',
       content: 'Finally understand what "HODL" means! It\'s not just holding, it\'s believing in the technology long-term. Also learned about staking rewards today 💎',
@@ -89,10 +92,12 @@ const TrendingTweets = () => {
       // Extract username and construct handle from it
       const username = tweet.username || 'Anonymous';
       const handle = tweet.username ? `@${tweet.username}` : '@unknown';
+      const displayName = (tweet.user_display_name && tweet.user_display_name.trim()) || username;
       
       return {
         id: tweet.id || `fallback-${Date.now()}`,
         username: username,
+        displayName: displayName,
         handle: handle,
         avatar: (tweet.user_profile_image_url && tweet.user_profile_image_url.trim()) || tweet.avatar || '🔥',
         content: tweet.content || tweet.text || 'No content available',
@@ -108,6 +113,7 @@ const TrendingTweets = () => {
       return {
         id: `error-${Date.now()}`,
         username: 'Error User',
+        displayName: 'Error User',
         handle: '@error',
         avatar: '⚠️',
         content: 'Failed to load tweet content',
@@ -172,7 +178,7 @@ const TrendingTweets = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-white text-sm truncate">{tweet.username}</h3>
+                      <h3 className="font-semibold text-white text-sm truncate">{tweet.displayName}</h3>
                       <span className="text-gray-400 text-sm">{tweet.handle}</span>
                       <span className="text-gray-500 text-sm">•</span>
                       <span className="text-gray-500 text-sm">{tweet.timestamp}</span>
