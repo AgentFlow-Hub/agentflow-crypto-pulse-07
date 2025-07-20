@@ -1,7 +1,7 @@
-
 import { Heart, MessageCircle, Repeat2, Loader2 } from 'lucide-react';
 import { useInfiniteTrendingTweets } from '../hooks/useMarketData';
 import { useInfiniteScroll } from '../hooks/useInfiniteScroll';
+import { Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 
 interface Tweet {
   id: string;
@@ -46,14 +46,13 @@ const TrendingTweets = () => {
     totalPages: infiniteData?.pages?.length || 0
   });
 
-  // Expanded fallback data (8 tweets for better UX)
   const fallbackTweets: Tweet[] = [
     {
       id: '1',
       username: 'cryptonewbie',
       displayName: 'Crypto Beginner',
       handle: '@cryptonewbie',
-      avatar: '🤓',
+      avatar: 'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=32&h=32&fit=crop&crop=face',
       content: 'Just bought my first Bitcoin! Started with $50 and learning about dollar-cost averaging. Small steps but excited to be part of this journey! 🚀',
       hashtags: ['Bitcoin', 'FirstBuy', 'DCA'],
       keywords: ['beginner', 'learning'],
@@ -67,7 +66,7 @@ const TrendingTweets = () => {
       username: 'defilearner',
       displayName: 'DeFi Explorer',
       handle: '@defilearner',
-      avatar: '🔍',
+      avatar: 'https://images.unsplash.com/photo-1582562124811-c09040d0a901?w=32&h=32&fit=crop&crop=face',
       content: 'Finally understand what "HODL" means! It\'s not just holding, it\'s believing in the technology long-term. Also learned about staking rewards today 💎',
       hashtags: ['HODL', 'Learning', 'Staking'],
       keywords: ['education', 'long-term'],
@@ -81,7 +80,7 @@ const TrendingTweets = () => {
       username: 'ethmaxi',
       displayName: 'ETH Maximalist',
       handle: '@ethmaxi',
-      avatar: '⚡',
+      avatar: 'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=32&h=32&fit=crop&crop=face',
       content: 'Ethereum 2.0 staking rewards are looking solid! Just hit my first milestone. The future is decentralized finance 🔥',
       hashtags: ['Ethereum', 'ETH2', 'Staking', 'DeFi'],
       keywords: ['ethereum', 'staking', 'defi'],
@@ -172,12 +171,24 @@ const TrendingTweets = () => {
     return num.toString();
   };
 
-  // Safe data mapping with detailed logging for debugging
+  const isUrl = (string: string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const getUserInitials = (displayName: string, username: string) => {
+    const name = displayName || username || 'U';
+    return name.split(' ').map(word => word[0]?.toUpperCase()).join('').slice(0, 2);
+  };
+
   const mapApiTweet = (tweet: any): Tweet => {
     try {
       console.log('🐦 Mapping individual tweet:', tweet);
       
-      // Extract username and construct handle from it
       const username = tweet.username || 'Anonymous';
       const handle = tweet.username ? `@${tweet.username}` : '@unknown';
       const displayName = (tweet.user_display_name && tweet.user_display_name.trim()) || username;
@@ -218,12 +229,10 @@ const TrendingTweets = () => {
     }
   };
 
-  // Process API data with detailed logging
   let tweets: Tweet[] = [];
   let usingFallback = false;
   
   try {
-    // Flatten all pages of infinite data
     const allApiTweets = infiniteData?.pages?.flatMap(page => {
       console.log('🐦 Processing page:', page);
       return page?.trending_tweets || [];
@@ -262,12 +271,10 @@ const TrendingTweets = () => {
         </div>
       )}
       
-      {/* Debug info */}
       <div className="mb-2 text-xs text-blue-400 bg-blue-900/20 border border-blue-700/50 rounded px-2 py-1 flex-shrink-0">
         Showing {tweets.length} tweets {usingFallback ? '(sample data)' : '(from API)'}
       </div>
       
-      {/* Tweets Container - Constrained to container bounds */}
       <div className="flex-1 min-h-0">
         <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
           <div className="space-y-3 pb-4">
@@ -277,11 +284,24 @@ const TrendingTweets = () => {
                 className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur-sm border border-gray-700/50 rounded-lg p-3 hover:border-purple-500/50 transition-all duration-300 animate-fade-in"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                {/* Tweet Header */}
                 <div className="flex items-start space-x-3 mb-2">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-sm flex-shrink-0">
-                    {tweet.avatar}
-                  </div>
+                  {isUrl(tweet.avatar) ? (
+                    <Avatar className="w-8 h-8 flex-shrink-0">
+                      <AvatarImage 
+                        src={tweet.avatar} 
+                        alt={`${tweet.displayName}'s avatar`}
+                        className="object-cover"
+                      />
+                      <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-semibold">
+                        {getUserInitials(tweet.displayName, tweet.username)}
+                      </AvatarFallback>
+                    </Avatar>
+                  ) : (
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-sm flex-shrink-0">
+                      {tweet.avatar}
+                    </div>
+                  )}
+                  
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center space-x-2">
                       <h3 className="font-semibold text-white text-sm truncate">{tweet.displayName}</h3>
@@ -292,12 +312,10 @@ const TrendingTweets = () => {
                   </div>
                 </div>
 
-                {/* Tweet Content */}
                 <div className="mb-3">
                   <p className="text-gray-300 leading-relaxed text-sm">{tweet.content}</p>
                 </div>
 
-                {/* Engagement Metrics - More Compact */}
                 <div className="flex items-center space-x-4 pt-2 border-t border-gray-700/50">
                   <button className="flex items-center space-x-1 text-gray-400 hover:text-red-400 transition-colors duration-200">
                     <Heart className="w-4 h-4" />
@@ -317,7 +335,6 @@ const TrendingTweets = () => {
               </div>
             ))}
             
-            {/* Infinite Scroll Sentinel */}
             <div ref={sentinelRef} className="h-4 flex items-center justify-center">
               {isFetchingNextPage && (
                 <Loader2 className="w-4 h-4 animate-spin text-primary" />
