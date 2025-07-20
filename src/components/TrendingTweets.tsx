@@ -21,6 +21,7 @@ interface Tweet {
 const TrendingTweets = () => {
   console.log('🐦 TrendingTweets component mounting...');
   
+  // Updated parameters: 50 tweets, 7-day lookback, min 1 engagement, 20 top tokens, 2 max per user, 0.3 diversity
   const { 
     data: infiniteData, 
     isLoading, 
@@ -28,7 +29,7 @@ const TrendingTweets = () => {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage
-  } = useInfiniteTrendingTweets(10, 24, 10, 20);
+  } = useInfiniteTrendingTweets(50, 168, 1, 20, 2, 0.3);
 
   const { sentinelRef } = useInfiniteScroll({
     hasNextPage: hasNextPage ?? false,
@@ -41,10 +42,11 @@ const TrendingTweets = () => {
     isLoading, 
     error: error?.message || error,
     hasNextPage,
-    isFetchingNextPage
+    isFetchingNextPage,
+    totalPages: infiniteData?.pages?.length || 0
   });
 
-  // Fallback data if API fails
+  // Expanded fallback data (8 tweets for better UX)
   const fallbackTweets: Tweet[] = [
     {
       id: '1',
@@ -73,6 +75,90 @@ const TrendingTweets = () => {
       comments: 89,
       reposts: 456,
       timestamp: '5h ago'
+    },
+    {
+      id: '3',
+      username: 'ethmaxi',
+      displayName: 'ETH Maximalist',
+      handle: '@ethmaxi',
+      avatar: '⚡',
+      content: 'Ethereum 2.0 staking rewards are looking solid! Just hit my first milestone. The future is decentralized finance 🔥',
+      hashtags: ['Ethereum', 'ETH2', 'Staking', 'DeFi'],
+      keywords: ['ethereum', 'staking', 'defi'],
+      likes: 2100,
+      comments: 145,
+      reposts: 678,
+      timestamp: '1h ago'
+    },
+    {
+      id: '4',
+      username: 'solanadev',
+      displayName: 'Solana Builder',
+      handle: '@solanadev',
+      avatar: '🌐',
+      content: 'Built my first dApp on Solana! The speed is incredible - transactions confirm in milliseconds. Web3 is here! 🚀',
+      hashtags: ['Solana', 'dApp', 'Web3', 'Building'],
+      keywords: ['solana', 'development', 'web3'],
+      likes: 1800,
+      comments: 234,
+      reposts: 567,
+      timestamp: '2h ago'
+    },
+    {
+      id: '5',
+      username: 'nftcollector',
+      displayName: 'NFT Hunter',
+      handle: '@nftcollector',
+      avatar: '🎨',
+      content: 'Just discovered this amazing NFT project with real utility! Not just JPEGs, but actual membership benefits. This is the future of digital ownership 🖼️',
+      hashtags: ['NFT', 'DigitalArt', 'Utility', 'Membership'],
+      keywords: ['nft', 'utility', 'digital'],
+      likes: 956,
+      comments: 78,
+      reposts: 189,
+      timestamp: '4h ago'
+    },
+    {
+      id: '6',
+      username: 'degentrader',
+      displayName: 'Degen Trader',
+      handle: '@degentrader',
+      avatar: '📈',
+      content: 'That feeling when your small altcoin position 10x in a week... Sometimes being early pays off! Still HODLing for the long term 💪',
+      hashtags: ['Altcoins', 'Trading', 'HODL', 'Gains'],
+      keywords: ['trading', 'altcoins', 'gains'],
+      likes: 3200,
+      comments: 456,
+      reposts: 892,
+      timestamp: '6h ago'
+    },
+    {
+      id: '7',
+      username: 'cryptomom',
+      displayName: 'Crypto Mom',
+      handle: '@cryptomom',
+      avatar: '👩‍💼',
+      content: 'Teaching my kids about crypto and blockchain technology. They\'re more interested than I expected! Starting with the basics of digital scarcity 📚',
+      hashtags: ['Education', 'Kids', 'Blockchain', 'Future'],
+      keywords: ['education', 'teaching', 'family'],
+      likes: 1450,
+      comments: 167,
+      reposts: 234,
+      timestamp: '8h ago'
+    },
+    {
+      id: '8',
+      username: 'l2researcher',
+      displayName: 'Layer 2 Researcher',
+      handle: '@l2researcher',
+      avatar: '🔬',
+      content: 'Layer 2 solutions are game changers! Gas fees down 90%, transaction speed up 100x. This is how crypto goes mainstream 🌍',
+      hashtags: ['Layer2', 'Scaling', 'GasFees', 'Research'],
+      keywords: ['layer2', 'scaling', 'research'],
+      likes: 2890,
+      comments: 345,
+      reposts: 678,
+      timestamp: '12h ago'
     }
   ];
 
@@ -86,15 +172,17 @@ const TrendingTweets = () => {
     return num.toString();
   };
 
-  // Safe data mapping with error handling
+  // Safe data mapping with detailed logging for debugging
   const mapApiTweet = (tweet: any): Tweet => {
     try {
+      console.log('🐦 Mapping individual tweet:', tweet);
+      
       // Extract username and construct handle from it
       const username = tweet.username || 'Anonymous';
       const handle = tweet.username ? `@${tweet.username}` : '@unknown';
       const displayName = (tweet.user_display_name && tweet.user_display_name.trim()) || username;
       
-      return {
+      const mappedTweet = {
         id: tweet.id || `fallback-${Date.now()}`,
         username: username,
         displayName: displayName,
@@ -108,8 +196,11 @@ const TrendingTweets = () => {
         reposts: Number(tweet.reposts || tweet.retweet_count || 0) || 0,
         timestamp: tweet.timestamp || tweet.created_at || 'Unknown time'
       };
+      
+      console.log('🐦 Successfully mapped tweet:', mappedTweet);
+      return mappedTweet;
     } catch (err) {
-      console.error('Error mapping tweet:', err, tweet);
+      console.error('🐦 Error mapping tweet:', err, tweet);
       return {
         id: `error-${Date.now()}`,
         username: 'Error User',
@@ -127,23 +218,32 @@ const TrendingTweets = () => {
     }
   };
 
-  // Use API data or fallback with safe mapping
+  // Process API data with detailed logging
   let tweets: Tweet[] = [];
+  let usingFallback = false;
+  
   try {
     // Flatten all pages of infinite data
-    const allApiTweets = infiniteData?.pages?.flatMap(page => page?.trending_tweets || []) || [];
+    const allApiTweets = infiniteData?.pages?.flatMap(page => {
+      console.log('🐦 Processing page:', page);
+      return page?.trending_tweets || [];
+    }) || [];
+    
     console.log('🐦 Raw API tweets from all pages:', allApiTweets);
+    console.log('🐦 Total API tweets found:', allApiTweets.length);
     
     if (allApiTweets.length > 0) {
       tweets = allApiTweets.map(mapApiTweet);
-      console.log('🐦 Mapped tweets:', tweets);
+      console.log('🐦 Successfully mapped', tweets.length, 'tweets from API');
     } else {
       tweets = fallbackTweets;
-      console.log('🐦 Using fallback tweets');
+      usingFallback = true;
+      console.log('🐦 Using fallback tweets - API returned no data');
     }
   } catch (err) {
     console.error('🐦 Error processing tweets:', err);
     tweets = fallbackTweets;
+    usingFallback = true;
   }
 
   if (isLoading) {
@@ -156,11 +256,17 @@ const TrendingTweets = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {error && (
+      {(error || usingFallback) && (
         <div className="mb-2 text-xs text-amber-400 bg-amber-900/20 border border-amber-700/50 rounded px-2 py-1 flex-shrink-0">
-          Using fallback data
+          {error ? `API Error: ${error.message || 'Unknown error'}` : 'Using sample data - API returned no tweets'}
         </div>
       )}
+      
+      {/* Debug info */}
+      <div className="mb-2 text-xs text-blue-400 bg-blue-900/20 border border-blue-700/50 rounded px-2 py-1 flex-shrink-0">
+        Showing {tweets.length} tweets {usingFallback ? '(sample data)' : '(from API)'}
+      </div>
+      
       {/* Tweets Container - Constrained to container bounds */}
       <div className="flex-1 min-h-0">
         <div className="h-full overflow-y-auto pr-2 custom-scrollbar">
